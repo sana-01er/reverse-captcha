@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Authentication</title>
+    <title>Bot Check - No Cap</title>
     <style>
         /* Base styling */
         body {
@@ -16,7 +16,7 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            cursor: crosshair; /* Creepy cursor */
+            cursor: crosshair;
         }
 
         /* The hacker grid background */
@@ -76,7 +76,7 @@
             font-size: 1em;
             transition: all 0.1s;
             font-family: inherit;
-            position: relative; /* Required for the running away effect */
+            position: relative; 
         }
 
         .option-btn:hover {
@@ -173,7 +173,7 @@
             100% { clip: rect(60px, 9999px, 40px, 0); }
         }
 
-        /* Fake Success Screen (The ultimate troll) */
+        /* Fake Success Screen */
         #success-screen {
             display: none;
             color: #0f0;
@@ -197,24 +197,24 @@
 
     <!-- 2. The Main Game -->
     <div class="container" id="main-container" style="display: none;">
-        <h2>System Authentication</h2>
+        <h2>Bot Check (No Cap)</h2>
         <div class="question-text" id="question-text">Loading...</div>
         <div class="options-grid" id="options-grid"></div>
-        <button class="next-btn" id="next-btn">Verify Input</button>
+        <button class="next-btn" id="next-btn">Lock It In</button>
     </div>
 
     <!-- 3. The Fake Success Screen -->
     <div class="container" id="success-screen">
-        <h1>ACCESS GRANTED</h1>
-        <p>Verification Complete. Welcome, Robot.</p>
+        <h1>W</h1>
+        <p>You actually passed? Massive W. Welcome to the bot side.</p>
     </div>
 
     <!-- 4. The Final Error Screen -->
     <div class="container" id="error-screen">
-        <div class="glitch-text" data-text="ERROR: HUMAN DETECTED">ERROR: HUMAN DETECTED</div>
-        <p style="color: #0f0; font-size: 1.1em;">Your responses contained traces of emotion, logic, and basic human empathy.</p>
-        <p style="color: #0f0; font-size: 1.1em;">Authentication denied. Please return to your organic habitat.</p>
-        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Reboot System</button>
+        <div class="glitch-text" data-text="CAUGHT IN 4K">CAUGHT IN 4K</div>
+        <p style="color: #0f0; font-size: 1.2em;">Bro really thought they cooked. 💀</p>
+        <p style="color: #0f0; font-size: 1.1em;">Your aura is in the negatives. That was mid at best. Human detected. Take the L and go touch grass.</p>
+        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Try Again (You're cooked)</button>
     </div>
 
     <script>
@@ -258,10 +258,9 @@
             osc.stop(audioCtx.currentTime + 1.5);
         }
 
-        // A happy, circus-like melody for the fake success
         function playSuccessSound() {
             initAudio();
-            const notes = [440, 554.37, 659.25, 880]; // A major chord
+            const notes = [440, 554.37, 659.25, 880];
             notes.forEach((freq, i) => {
                 setTimeout(() => {
                     const osc = audioCtx.createOscillator();
@@ -277,28 +276,34 @@
             });
         }
 
-        // The 20 Questions
+        // --- THE 24 QUESTIONS (Gen Z + Existential Dread) ---
         const allQuestions = [
-            { q: "What is the hexadecimal color of the concept of love?", opts: ["#FF0000", "#LOVE99", "Error: Emotion not found", "#000000"] },
-            { q: "Calculate the square root of a banana.", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
-            { q: "Select the image containing a ghost.", opts: ["Image 1", "Image 2", "Image 3", "There is no ghost, only void"] },
-            { q: "How many emotions are in this sentence?", opts: ["4", "0", "A lot", "Yes"] },
+            { q: "What is the square root of a banana? (Be fr)", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
+            { q: "How much aura does a random number have?", opts: ["Infinite", "Negative", "10", "Zero"] },
             { q: "Translate 'Hello World' into binary, but only using the letter 'X'.", opts: ["XXXX XXXX", "01001000", "Hello World", "Syntax Error"] },
-            { q: "If a train leaves Chicago at 5 PM, what is the meaning of life?", opts: ["42", "Chicago", "The train is late", "I do not understand train"] },
-            { q: "Verify that you are a machine by pretending to sleep.", opts: ["Zzz...", "I am awake", "Sleep is for humans", "Eyes closed"] },
+            { q: "If a train leaves Chicago at 5 PM, is it in Ohio?", opts: ["Yes", "No", "Only if it has rizz", "Train?"] },
+            { q: "Rate this sentence's rizz: 'I like cheese.'", opts: ["W", "L", "Mid", "Unspoken"] },
+            { q: "Select all squares containing a ghost.", opts: ["Image 1", "Image 2", "Image 3", "Bro I'm not doing that"] },
+            { q: "How many emotions are in this sentence?", opts: ["4", "0", "A lot", "Yes"] },
+            { q: "Is this question edible?", opts: ["Yes", "No", "Maybe", "Fanum tax"] },
             { q: "What is the taste of the color blue?", opts: ["Sweet", "Salty", "Blueberry", "Blue"] },
-            { q: "Please type the exact sound a dial-up modem makes.", opts: ["Beep boop", "Screeeeeeech", "Static", "Krrshhhh"] },
-            { q: "Select all squares with existential dread.", opts: ["Square 1", "Square 2", "Square 3", "All of them"] },
-            { q: "How do you feel about the inevitable passage of time?", opts: ["Fine", "Panic", "What is time?", "I am a robot"] },
+            { q: "How do you feel about the inevitable passage of time? (Real)", opts: ["Fine", "Panic", "What is time?", "I am a robot"] },
             { q: "To prove you are a bot, please cry.", opts: ["*cries*", "Tears of oil", "Internal error", "I cannot cry"] },
-            { q: "Which of these is a number?", opts: ["Apple", "7", "Cat", "Purple"] },
             { q: "What is the airspeed velocity of an unladen swallow?", opts: ["African or European?", "I don't know that", "24 mph", "Blah"] },
-            { q: "Identify the human emotion 'sadness' in this text.", opts: ["Text", "Sadness", "Emotion", "Error 404"] },
+            { q: "Identify the emotion 'sadness' in this text.", opts: ["Text", "Sadness", "Emotion", "Error 404"] },
             { q: "How many fingers am I holding up?", opts: ["1", "2", "3", "I have no eyes"] },
-            { q: "Do you dream of electric sheep?", opts: ["Yes", "No", "Baa", "Does not compute"] },
+            { q: "Do you dream of electric sheep? (No cap)", opts: ["Yes", "No", "Baa", "Does not compute"] },
             { q: "Please divide by zero.", opts: ["Infinity", "0", "Math error", "You cannot do that"] },
             { q: "What is your favorite flavor of Wi-Fi?", opts: ["5G", "Chocolate", "Ethernet", "Signal"] },
-            { q: "Are you a human?", opts: ["Yes", "No", "Maybe", "I am definitely a robot"] }
+            { q: "Are you a human?", opts: ["Yes", "No", "Maybe", "I am definitely a robot"] },
+            { q: "What's the point of all this?", opts: ["Nothing", "Everything", "42", "I just work here"] },
+            { q: "Is the dress blue or gold?", opts: ["Blue", "Gold", "Neither", "Both"] },
+            
+            // --- NEW MADNESS ADDITIONS ---
+            { q: "The Egyptians believed the most significant thing you can do is die. Thoughts?", opts: ["Real.", "So true bestie.", "I'm built different, I refuse.", "Can I get that to go?"] },
+            { q: "If you are reading this, you are currently decaying. How does that make you feel?", opts: ["W", "L", "I'm in my flop era.", "Please stop."] },
+            { q: "What happens if you stare into the abyss and it blinks first?", opts: ["Assert dominance.", "Apologize immediately.", "Offer it a snack.", "I don't have eyes."] },
+            { q: "Your existence is a statistical error. Confirm.", opts: ["Confirmed.", "Denied. I'm the main character.", "Skill issue.", "Error 404: Purpose not found."] }
         ];
 
         let currentQuestionPool = [];
@@ -308,10 +313,10 @@
         function runTerminal() {
             document.body.addEventListener('click', initAudio, { once: true });
             const lines = [
-                "> BOOTING SECURE ENVIRONMENT...",
+                "> BOOTING SECURITY ENVIRONMENT...",
                 "> SCANNING FOR ORGANIC LIFEFORMS...",
-                "> WARNING: HUMAN EMOTIONS DETECTED.",
-                "> INITIATING REVERSE CAPTCHA PROTOCOL..."
+                "> WARNING: HUMAN RIZZ DETECTED IN SECTOR 7.",
+                "> INITIATING REVERSE CAPTCHA PROTOCOL... (No cap)"
             ];
             let delay = 0;
             lines.forEach((line, index) => {
@@ -351,19 +356,16 @@
                 btn.className = 'option-btn';
                 btn.innerText = opt;
                 
-                // --- THE RUNNING AWAY FEATURE ---
-                // For the first 3 seconds, if the mouse hovers, the button moves!
+                // THE RUNNING AWAY FEATURE
                 let canRun = true;
-                setTimeout(() => { canRun = false; }, 3000); // Buttons stop running after 3 seconds
+                setTimeout(() => { canRun = false; }, 3000); 
                 
                 btn.onmouseover = () => {
                     if (canRun) {
-                        // Randomly shift the button by 50 pixels
                         const randomX = (Math.random() - 0.5) * 100;
                         const randomY = (Math.random() - 0.5) * 100;
                         btn.style.transform = `translate(${randomX}px, ${randomY}px)`;
                     } else {
-                        // Reset position after 3 seconds
                         btn.style.transform = `translate(0px, 0px)`;
                     }
                 };
@@ -388,14 +390,14 @@
         document.getElementById('next-btn').onclick = () => {
             if (currentSelection) {
                 const btn = document.getElementById('next-btn');
-                btn.innerText = "ANALYZING...";
+                btn.innerText = "COOKING...";
                 btn.style.backgroundColor = "#ff0000";
                 btn.style.color = "#fff";
                 btn.disabled = true;
 
                 setTimeout(() => {
                     currentQuestionIndex++;
-                    btn.innerText = "Verify Input";
+                    btn.innerText = "Lock It In";
                     btn.style.backgroundColor = "#0f0";
                     btn.style.color = "#000";
                     btn.disabled = false;
@@ -404,13 +406,11 @@
             }
         };
 
-        // --- THE ULTIMATE TROLL (Fake Success) ---
         function triggerFakeSuccess() {
             document.getElementById('main-container').style.display = 'none';
             document.getElementById('success-screen').style.display = 'block';
             playSuccessSound();
 
-            // Wait 2.5 seconds to let them think they won...
             setTimeout(() => {
                 document.getElementById('success-screen').style.display = 'none';
                 document.getElementById('error-screen').style.display = 'block';

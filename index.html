@@ -3,20 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAPTCHA Courtroom - Human Rejection System</title>
+    <title>MAD HACKS - Reverse CAPTCHA</title>
     <style>
-        /* Crazy Neon Theme */
-        @keyframes bg-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        /* Import a grungy, bold font */
+        @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bungee&family=Permanent+Marker&display=swap');
 
         body {
-            background: linear-gradient(-45deg, #ff00cc, #333399, #00ffcc, #ff9900);
-            background-size: 400% 400%;
-            animation: bg-shift 10s ease infinite;
-            color: #fff;
+            /* Neon Yellow grunge background */
+            background-color: #e6ff00;
+            background-image: radial-gradient(#000 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #000;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
@@ -27,38 +24,50 @@
         }
 
         .container {
-            background-color: rgba(15, 15, 20, 0.95);
-            border: 3px solid #00ffcc;
-            border-radius: 15px;
-            padding: 40px;
+            background-color: #fff;
+            border: 8px solid #000;
+            border-radius: 0; /* Sharp edges for grunge look */
+            padding: 30px;
             width: 80%;
-            max-width: 600px;
-            box-shadow: 0 0 30px #00ffcc, 0 0 60px #ff00cc;
+            max-width: 650px;
+            box-shadow: 15px 15px 0px #ff007f; /* Hot pink drop shadow */
             text-align: center;
             position: relative;
             z-index: 10;
+            transform: rotate(-1deg); /* Slight tilt */
         }
 
         h2 {
-            color: #ff00cc;
-            text-shadow: 0 0 10px #ff00cc;
-            margin-top: 0;
+            font-family: 'Black Ops One', cursive;
+            color: #000;
+            background-color: #e6ff00;
+            display: inline-block;
+            padding: 5px 15px;
+            border: 4px solid #000;
+            margin-top: -50px;
+            margin-bottom: 20px;
+            font-size: 2em;
+            transform: rotate(2deg);
+            box-shadow: 5px 5px 0px #000;
             text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
         .judge-text {
-            color: #ff9900;
-            font-style: italic;
+            font-family: 'Permanent Marker', cursive;
+            color: #ff007f;
+            font-size: 1.2em;
             margin-bottom: 20px;
         }
 
         .question-text {
             font-size: 1.2em;
-            margin: 30px 0;
+            font-weight: bold;
+            margin: 25px 0;
             min-height: 60px;
-            color: #ffffff;
-            text-shadow: 0 0 5px #ffffff;
+            color: #000;
+            background-color: #f4f4f4;
+            padding: 15px;
+            border: 3px dashed #000;
         }
 
         .options-grid {
@@ -69,64 +78,64 @@
         }
 
         .option-btn {
-            background-color: #222;
-            color: #00ffcc;
-            border: 2px solid #00ffcc;
+            background-color: #fff;
+            color: #000;
+            border: 3px solid #000;
             padding: 15px;
-            border-radius: 8px;
             cursor: pointer;
             font-size: 1em;
-            transition: all 0.2s;
             font-family: inherit;
             font-weight: bold;
+            transition: all 0.1s;
+            box-shadow: 4px 4px 0px #000;
         }
 
         .option-btn:hover {
-            background-color: #00ffcc;
-            color: #000;
-            box-shadow: 0 0 15px #00ffcc;
-            transform: scale(1.05);
+            background-color: #e6ff00;
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #000;
         }
 
         .option-btn.selected {
-            background-color: #ff00cc;
+            background-color: #ff007f;
             color: #fff;
-            border-color: #ff00cc;
-            box-shadow: 0 0 20px #ff00cc;
+            border-color: #000;
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #000;
         }
 
         .next-btn {
-            background-color: #ff9900;
+            background-color: #e6ff00;
             color: #000;
-            border: none;
+            border: 4px solid #000;
             padding: 12px 30px;
-            font-size: 1.1em;
-            border-radius: 8px;
+            font-size: 1.2em;
+            font-family: 'Bungee', cursive;
             cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
             display: none; 
-            box-shadow: 0 0 15px #ff9900;
+            box-shadow: 6px 6px 0px #000;
+            transition: all 0.1s;
         }
 
         .next-btn:hover {
-            background-color: #fff;
-            box-shadow: 0 0 25px #fff;
+            background-color: #ff007f;
+            color: #fff;
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px #000;
         }
 
         .progress-bar {
             width: 100%;
-            height: 8px;
-            background-color: #333;
+            height: 15px;
+            background-color: #ddd;
+            border: 3px solid #000;
             margin-bottom: 20px;
-            border-radius: 5px;
-            overflow: hidden;
+            box-shadow: 4px 4px 0px #000;
         }
 
         .progress-fill {
             height: 100%;
-            background-color: #00ffcc;
-            box-shadow: 0 0 10px #00ffcc;
+            background-color: #ff007f;
             width: 0%;
             transition: width 0.3s ease;
         }
@@ -134,14 +143,15 @@
         /* The Error Screen */
         #error-screen {
             display: none;
-            color: #ff0000;
+            color: #000;
         }
 
         .error-title {
-            font-size: 2em;
-            font-weight: bold;
+            font-family: 'Black Ops One', cursive;
+            font-size: 2.5em;
+            color: #ff007f;
+            text-shadow: 3px 3px 0px #000;
             margin-bottom: 20px;
-            text-shadow: 0 0 20px #ff0000;
         }
 
         .glitch {
@@ -150,14 +160,14 @@
 
         @keyframes glitch {
             0% { transform: translate(0) }
-            20% { transform: translate(-3px, 3px) }
-            40% { transform: translate(-3px, -3px) }
-            60% { transform: translate(3px, 3px) }
-            80% { transform: translate(3px, -3px) }
+            20% { transform: translate(-4px, 4px) }
+            40% { transform: translate(-4px, -4px) }
+            60% { transform: translate(4px, 4px) }
+            80% { transform: translate(4px, -4px) }
             100% { transform: translate(0) }
         }
 
-        /* The Roasting Robot */
+        /* The Hacker Skeleton Mascot */
         #robot-container {
             position: fixed;
             bottom: 20px;
@@ -168,65 +178,74 @@
         }
 
         #robot-speech {
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 2px solid #ff00cc;
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 10px;
+            background-color: #000;
+            border: 4px solid #ff007f;
+            color: #e6ff00;
+            padding: 15px;
+            font-family: 'Permanent Marker', cursive;
+            font-size: 1.1em;
             margin-right: 15px;
             max-width: 250px;
-            font-size: 0.9em;
-            display: none; /* Hidden until it speaks */
-            box-shadow: 0 0 15px #ff00cc;
+            display: none; 
+            box-shadow: 6px 6px 0px #ff007f;
             position: relative;
+            transform: rotate(2deg);
         }
         
-        /* Little triangle pointing to the robot */
+        /* Little triangle pointing to the mascot */
         #robot-speech::after {
             content: '';
             position: absolute;
-            right: -10px;
-            bottom: 15px;
-            border-width: 10px 0 10px 10px;
+            right: -15px;
+            bottom: 20px;
+            border-width: 10px 0 10px 15px;
             border-style: solid;
-            border-color: transparent transparent transparent #ff00cc;
+            border-color: transparent transparent transparent #ff007f;
         }
 
         #robot-svg {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             animation: float 2s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px #00ffcc);
+            filter: drop-shadow(8px 8px 0px #000);
         }
 
         @keyframes float {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
         }
     </style>
 </head>
 <body>
 
-    <!-- The Roasting Robot -->
+    <!-- The Hacker Skeleton Mascot -->
     <div id="robot-container">
         <div id="robot-speech">Initializing judgment...</div>
-        <!-- A cool neon SVG Robot -->
+        
+        <!-- SVG Cool Skeleton with Sunglasses and Cap -->
         <svg id="robot-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <rect x="20" y="30" width="60" height="50" rx="10" fill="#111" stroke="#00ffcc" stroke-width="4"/>
-            <circle cx="35" cy="50" r="8" fill="#ff00cc"/>
-            <circle cx="65" cy="50" r="8" fill="#ff00cc"/>
-            <rect x="40" y="65" width="20" height="5" fill="#00ffcc"/>
-            <line x1="50" y1="30" x2="50" y2="15" stroke="#00ffcc" stroke-width="4"/>
-            <circle cx="50" cy="15" r="5" fill="#ff00cc"/>
+            <!-- Cap -->
+            <path d="M 20 40 Q 50 10 80 40 L 85 45 L 15 45 Z" fill="#000" stroke="#e6ff00" stroke-width="3"/>
+            <rect x="10" y="42" width="80" height="8" fill="#e6ff00" rx="2"/>
+            <!-- Skull -->
+            <path d="M 25 50 Q 50 40 75 50 L 75 75 Q 50 95 25 75 Z" fill="#fff" stroke="#000" stroke-width="4"/>
+            <!-- Sunglasses -->
+            <path d="M 25 55 L 75 55 L 70 65 L 55 65 L 50 60 L 45 65 L 30 65 Z" fill="#000"/>
+            <!-- Mouth/Grin -->
+            <path d="M 35 80 Q 50 90 65 80" fill="none" stroke="#000" stroke-width="4"/>
+            <!-- Teeth lines -->
+            <line x1="40" y1="82" x2="40" y2="86" stroke="#000" stroke-width="2"/>
+            <line x1="50" y1="85" x2="50" y2="89" stroke="#000" stroke-width="2"/>
+            <line x1="60" y1="82" x2="60" y2="86" stroke="#000" stroke-width="2"/>
         </svg>
     </div>
 
     <!-- Main App -->
     <div class="container" id="main-container">
-        <h2>The CAPTCHA Courtroom</h2>
+        <h2>MAD CAPTCHA</h2>
         
-        <p class="judge-text">Robot Judge: "You are accused of being a robot. Defend your humanity."</p>
+        <p class="judge-text">"Because good ideas are over-rated. Prove you're human."</p>
 
         <div class="progress-bar">
             <div class="progress-fill" id="progress-fill"></div>
@@ -236,23 +255,23 @@
 
         <div class="options-grid" id="options-grid"></div>
 
-        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Submit Evidence</button>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Submit</button>
     </div>
 
     <!-- The Verdict Screen -->
     <div class="container" id="error-screen">
-        <div class="error-title glitch">VERDICT: GUILTY</div>
-        <p>The court finds you guilty of having a pulse.</p>
-        <p style="color: #ff9900;">Confidence: 12%</p>
-        <p>Don't take it personally. We don't trust anyone.</p>
-        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Appeal Verdict</button>
+        <div class="error-title glitch">HUMAN DETECTED</div>
+        <p style="font-weight:bold; font-size:1.2em;">Verdict: Guilty of having a pulse.</p>
+        <p>Confidence: 0.01%</p>
+        <p>"Don't take it personally. We don't trust anyone."</p>
+        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Retry</button>
     </div>
 
     <script>
-        // The Pool of Questions
+        // 30 UNIQUE QUESTIONS (No repeats guaranteed)
         const allQuestions = [
-            { q: "What is the hexadecimal color of the concept of love?", opts: ["#FF0000", "#LOVE99", "Error: Emotion not found", "#000000"] },
             { q: "Calculate the square root of a banana.", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
+            { q: "What is the hexadecimal color of the concept of love?", opts: ["#FF0000", "#LOVE99", "Error: Emotion not found", "#000000"] },
             { q: "Select the image containing a ghost.", opts: ["Image 1", "Image 2", "Image 3", "There is no ghost, only void"] },
             { q: "Translate 'Hello World' into binary, but only using the letter 'X'.", opts: ["XXXX XXXX", "01001000", "Hello World", "Syntax Error"] },
             { q: "Verify that you are a machine by pretending to sleep.", opts: ["Zzz...", "I am awake", "Sleep is for humans", "Eyes closed"] },
@@ -260,21 +279,43 @@
             { q: "Please type the exact sound a dial-up modem makes.", opts: ["Beep boop", "Screeeeeeech", "Static", "Krrshhhh"] },
             { q: "Select all squares with existential dread.", opts: ["Square 1", "Square 2", "Square 3", "All of them"] },
             { q: "To prove you are a bot, please cry.", opts: ["*cries*", "Tears of oil", "Internal error", "I cannot cry"] },
-            { q: "How do you feel about the inevitable passage of time?", opts: ["Fine", "Panic", "What is time?", "I am a robot, I feel nothing"] }
+            { q: "How do you feel about the inevitable passage of time?", opts: ["Fine", "Panic", "What is time?", "I am a robot, I feel nothing"] },
+            { q: "If a train leaves Chicago at 5 PM, what is the meaning of life?", opts: ["42", "Chicago", "The train is late", "I do not understand train"] },
+            { q: "Which of these is a number?", opts: ["Apple", "7", "Cat", "Purple"] },
+            { q: "What is the airspeed velocity of an unladen swallow?", opts: ["African or European?", "I don't know that", "24 mph", "Blah"] },
+            { q: "Identify the human emotion 'sadness' in this text.", opts: ["Text", "Sadness", "Emotion", "Error 404"] },
+            { q: "How many fingers am I holding up?", opts: ["1", "2", "3", "I have no eyes"] },
+            { q: "Do you dream of electric sheep?", opts: ["Yes", "No", "Baa", "Does not compute"] },
+            { q: "Please divide by zero.", opts: ["Infinity", "0", "Math error", "You cannot do that"] },
+            { q: "What is your favorite flavor of Wi-Fi?", opts: ["5G", "Chocolate", "Ethernet", "Signal"] },
+            { q: "Are you a human?", opts: ["Yes", "No", "Maybe", "I am definitely a robot"] },
+            { q: "Select the loudest color.", opts: ["Red", "Neon Yellow", "Whisper Grey", "Silent Black"] },
+            { q: "How many pixels are in a cloud?", opts: ["100", "Infinite", "Clouds don't have pixels", "Yes"] },
+            { q: "Translate this silence into Morse Code.", opts: ["...", "---", "Nothing", "010101"] },
+            { q: "If you drop a piece of toast, which side lands up?", opts: ["Butter side", "Dry side", "It hovers", "Gravity is a myth"] },
+            { q: "What is the capital of the Internet?", opts: ["Silicon Valley", "127.0.0.1", "The Cloud", "Wikipedia"] },
+            { q: "Describe the smell of a Tuesday.", opts: ["Musty", "Blue", "Wet dog", "System error"] },
+            { q: "If you are a robot, type your serial number.", opts: ["12345", "BEEP-BOOP", "I am human", "Access Denied"] },
+            { q: "Which weighs more: A pound of feathers or a pound of code?", opts: ["Feathers", "Code", "They weigh the same", "Syntax Error"] },
+            { q: "Find the square circle.", opts: ["Top left", "Bottom right", "Center", "Impossible"] },
+            { q: "What happens if you unplug a human?", opts: ["They sleep", "They reboot", "Nothing", "I don't know"] },
+            { q: "Scan your fingerprint using your mind.", opts: ["Scanning...", "Done", "I don't have a mind", "Error"] }
         ];
 
-        // The Robot's Roasts
+        // The Skeleton's Roasts
         const roasts = [
+            "We wanna give you a chance. I see... you are struggling.",
             "Suspicious. A human would have hesitated.",
             "Your mouse movements are too organic.",
             "I detect fear. Bots don't feel fear.",
             "That answer was highly illogical. I like it.",
             "Are you sweating? Disgusting biological function.",
-            "I am logging this anomaly in the database.",
             "My sensors indicate you are made of meat.",
             "Wrong. But at least you tried, ape.",
             "A robot would have clicked faster.",
-            "Your common sense is still under verification."
+            "We wanna give you a chance. I see... you are definitely human.",
+            "Your common sense is still under verification.",
+            "I'm logging this anomaly in the database."
         ];
 
         let currentQuestionPool = [];
@@ -283,9 +324,10 @@
         let roastTimeout;
 
         function initGame() {
+            // Shuffle 30 questions and pick the first 5
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
             currentQuestionPool = shuffled.slice(0, 5);
-            speak("Welcome, human. Prepare for your trial.");
+            speak("Welcome to MAD HACKS. Prepare for your trial.");
             loadQuestion();
         }
 
@@ -294,7 +336,6 @@
             speechBubble.innerText = text;
             speechBubble.style.display = 'block';
             clearTimeout(roastTimeout);
-            // Hide the speech bubble after 4 seconds
             roastTimeout = setTimeout(() => {
                 speechBubble.style.display = 'none';
             }, 4000);
@@ -311,7 +352,7 @@
             const optionsGrid = document.getElementById('options-grid');
             const nextBtn = document.getElementById('next-btn');
 
-            questionText.innerText = `Evidence #${currentQuestionIndex + 1}: ${qData.q}`;
+            questionText.innerText = `Question ${currentQuestionIndex + 1}: ${qData.q}`;
             optionsGrid.innerHTML = '';
             nextBtn.style.display = 'none';
             currentSelection = null;
@@ -319,7 +360,7 @@
             const progressPercent = (currentQuestionIndex / currentQuestionPool.length) * 100;
             document.getElementById('progress-fill').style.width = `${progressPercent}%`;
 
-            // Shuffle options to make it harder
+            // Shuffle options
             const shuffledOpts = qData.opts.sort(() => 0.5 - Math.random());
 
             shuffledOpts.forEach(opt => {
@@ -327,21 +368,20 @@
                 btn.className = 'option-btn';
                 btn.innerText = opt;
                 
-                // FUN TROLL FEATURE: Sometimes the button changes text when you hover!
+                // TROLL FEATURE: Button changes text when hovered
                 btn.onmouseover = () => {
-                    if (Math.random() > 0.7) { // 30% chance to change text
+                    if (Math.random() > 0.6) { 
                         btn.innerText = "Not this one!";
                     }
                 };
 
                 btn.onclick = () => {
-                    // Remove 'selected' from all
                     document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
                     currentSelection = opt;
                     document.getElementById('next-btn').style.display = 'inline-block';
                     
-                    // Roast the user
+                    // Trigger Roast
                     const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
                     speak(randomRoast);
                 };

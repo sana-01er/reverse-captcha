@@ -7,10 +7,13 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bungee&family=Permanent+Marker&display=swap');
 
+        /* Robotic Tech Background */
         body {
-            background: linear-gradient(-45deg, #111111, #2b0f3a, #ff0000, #e6ff00);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
+            background-color: #050a14;
+            background-image: 
+                linear-gradient(rgba(0, 255, 204, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -22,19 +25,30 @@
             position: relative;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Pulsing Circuit Line */
+        .circuit-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #00ffcc, transparent);
+            height: 2px;
+            width: 100%;
+            top: 50%;
+            animation: pulseLine 4s infinite linear;
+            z-index: 1;
+        }
+
+        @keyframes pulseLine {
+            0% { transform: translateY(-50vh); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(50vh); opacity: 0; }
         }
 
         .container {
-            background-color: rgba(17, 17, 17, 0.95);
-            border: 6px solid #ff0000;
+            background-color: rgba(5, 10, 20, 0.95);
+            border: 4px solid #00ffcc;
             padding: 30px;
             width: 80%;
             max-width: 650px;
-            box-shadow: 12px 12px 0px #e6ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3), inset 0 0 20px rgba(0, 255, 204, 0.1);
             text-align: center;
             position: relative;
             z-index: 10;
@@ -43,20 +57,20 @@
         h2 {
             font-family: 'Black Ops One', cursive;
             color: #000;
-            background-color: #e6ff00;
+            background-color: #00ffcc;
             display: inline-block;
             padding: 10px 20px;
-            border: 4px solid #ff0000;
+            border: 2px solid #fff;
             margin-top: -55px;
             margin-bottom: 20px;
             font-size: 2em;
-            box-shadow: 5px 5px 0px #2b0f3a;
+            box-shadow: 0 0 15px #00ffcc;
             text-transform: uppercase;
         }
 
         .judge-text {
             font-family: 'Permanent Marker', cursive;
-            color: #e6ff00;
+            color: #00ffcc;
             font-size: 1.2em;
             margin-bottom: 20px;
         }
@@ -67,11 +81,12 @@
             margin: 25px 0;
             min-height: 60px;
             color: #fff;
-            background-color: #2b0f3a;
+            background-color: #091a2a;
             padding: 15px;
-            border: 3px dashed #e6ff00;
+            border: 2px dashed #00ffcc;
             position: relative;
             z-index: 20;
+            box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.2);
         }
 
         .options-container {
@@ -86,77 +101,83 @@
 
         .option-btn {
             position: fixed;
-            background-color: #111;
-            color: #fff;
-            border: 3px solid #e6ff00;
+            background-color: #091a2a;
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
             padding: 15px 25px;
             cursor: pointer;
             font-size: 1.1em;
             font-family: inherit;
             font-weight: bold;
-            box-shadow: 4px 4px 0px #ff0000;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
             z-index: 999; 
+            transition: all 0.2s;
         }
 
         .option-btn:hover {
-            background-color: #ff0000;
+            background-color: #00ffcc;
+            color: #000;
+            box-shadow: 0 0 20px #00ffcc;
         }
 
         .option-btn.selected {
-            background-color: #e6ff00;
-            color: #000;
-            border-color: #ff0000;
+            background-color: #ff0055;
+            color: #fff;
+            border-color: #ff0055;
             pointer-events: none; 
+            box-shadow: 0 0 20px #ff0055;
         }
 
         .next-btn {
-            background-color: #ff0000;
+            background-color: #ff0055;
             color: #fff;
-            border: 4px solid #e6ff00;
+            border: 2px solid #fff;
             padding: 12px 30px;
             font-size: 1.2em;
             font-family: 'Bungee', cursive;
             cursor: pointer;
             display: none; 
-            box-shadow: 6px 6px 0px #000;
+            box-shadow: 0 0 15px #ff0055;
             transition: all 0.1s;
             position: relative;
             z-index: 30;
         }
 
         .next-btn:hover {
-            background-color: #e6ff00;
+            background-color: #00ffcc;
             color: #000;
-            transform: translate(-2px, -2px);
-            box-shadow: 8px 8px 0px #ff0000;
+            box-shadow: 0 0 25px #00ffcc;
         }
 
         .progress-bar {
             width: 100%;
-            height: 15px;
-            background-color: #333;
-            border: 3px solid #e6ff00;
+            height: 10px;
+            background-color: #091a2a;
+            border: 1px solid #00ffcc;
             margin-bottom: 20px;
-            box-shadow: 4px 4px 0px #000;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
         }
 
         .progress-fill {
             height: 100%;
-            background-color: #ff0000;
+            background-color: #00ffcc;
             width: 0%;
             transition: width 0.3s ease;
+            box-shadow: 0 0 10px #00ffcc;
         }
 
         #error-screen {
             display: none;
             color: #fff;
+            border-color: #ff0055;
+            box-shadow: 0 0 30px rgba(255, 0, 85, 0.4);
         }
 
         .error-title {
             font-family: 'Black Ops One', cursive;
             font-size: 2.5em;
-            color: #ff0000;
-            text-shadow: 3px 3px 0px #e6ff00;
+            color: #ff0055;
+            text-shadow: 0 0 10px #ff0055;
             margin-bottom: 20px;
         }
 
@@ -173,7 +194,7 @@
             100% { transform: translate(0) }
         }
 
-        /* The New Classic Robot */
+        /* The Classic Robot */
         #robot-container {
             position: fixed; 
             display: flex;
@@ -185,8 +206,8 @@
         }
 
         #robot-speech {
-            background-color: #e6ff00;
-            border: 4px solid #ff0000;
+            background-color: #00ffcc;
+            border: 2px solid #fff;
             color: #000;
             padding: 15px;
             font-family: 'Permanent Marker', cursive;
@@ -194,7 +215,7 @@
             margin-right: 15px;
             max-width: 250px;
             display: none; 
-            box-shadow: 6px 6px 0px #2b0f3a;
+            box-shadow: 0 0 15px #00ffcc;
             position: relative;
         }
         
@@ -206,13 +227,13 @@
             transform: translateY(-50%);
             border-width: 10px 0 10px 15px;
             border-style: solid;
-            border-color: transparent transparent transparent #ff0000;
+            border-color: transparent transparent transparent #fff;
         }
 
         #robot-svg {
             width: 120px;
             height: 120px;
-            filter: drop-shadow(5px 5px 0px #ff0000);
+            filter: drop-shadow(0 0 10px #00ffcc);
             animation: hover 1.5s infinite alternate ease-in-out;
         }
 
@@ -221,39 +242,32 @@
             100% { transform: translateY(-15px) rotate(5deg); }
         }
         
-        /* The glowing red eyes */
         .robot-eye {
-            fill: #ff0000;
-            filter: drop-shadow(0 0 5px #ff0000);
+            fill: #ff0055;
+            filter: drop-shadow(0 0 5px #ff0055);
         }
     </style>
 </head>
 <body>
 
+    <!-- Pulsing background lines for a tech feel -->
+    <div class="circuit-line" style="animation-delay: 0s;"></div>
+    <div class="circuit-line" style="animation-delay: 2s;"></div>
+
     <!-- The Classic Robot -->
     <div id="robot-container">
         <div id="robot-speech">Initializing...</div>
-        <!-- A classic square-headed robot with antennas and a grumpy mouth -->
         <svg id="robot-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <!-- Antennas -->
-            <line x1="35" y1="15" x2="35" y2="30" stroke="#e6ff00" stroke-width="4"/>
-            <circle cx="35" cy="10" r="5" fill="#ff0000"/>
-            <line x1="65" y1="15" x2="65" y2="30" stroke="#e6ff00" stroke-width="4"/>
-            <circle cx="65" cy="10" r="5" fill="#ff0000"/>
-            
-            <!-- Ears -->
-            <rect x="10" y="45" width="10" height="20" fill="#e6ff00" rx="2"/>
-            <rect x="80" y="45" width="10" height="20" fill="#e6ff00" rx="2"/>
-
-            <!-- Main Head -->
-            <rect x="20" y="30" width="60" height="50" rx="10" fill="#111" stroke="#e6ff00" stroke-width="4"/>
-            
-            <!-- Glowing Eyes (These track the mouse via JS) -->
+            <line x1="35" y1="15" x2="35" y2="30" stroke="#00ffcc" stroke-width="4"/>
+            <circle cx="35" cy="10" r="5" fill="#ff0055"/>
+            <line x1="65" y1="15" x2="65" y2="30" stroke="#00ffcc" stroke-width="4"/>
+            <circle cx="65" cy="10" r="5" fill="#ff0055"/>
+            <rect x="10" y="45" width="10" height="20" fill="#00ffcc" rx="2"/>
+            <rect x="80" y="45" width="10" height="20" fill="#00ffcc" rx="2"/>
+            <rect x="20" y="30" width="60" height="50" rx="10" fill="#091a2a" stroke="#00ffcc" stroke-width="4"/>
             <circle id="eye-left" class="robot-eye" cx="35" cy="50" r="7"/>
             <circle id="eye-right" class="robot-eye" cx="65" cy="50" r="7"/>
-            
-            <!-- Grumpy Mouth -->
-            <path d="M 35 70 Q 50 60 65 70" fill="none" stroke="#ff0000" stroke-width="4" stroke-linecap="round"/>
+            <path d="M 35 70 Q 50 60 65 70" fill="none" stroke="#00ffcc" stroke-width="4" stroke-linecap="round"/>
         </svg>
     </div>
 
@@ -276,24 +290,35 @@
     <!-- Verdict Screen -->
     <div class="container" id="error-screen">
         <div class="error-title glitch">HUMAN DETECTED</div>
-        <p style="font-weight:bold; font-size:1.2em; color: #e6ff00;">Verdict: Guilty of having a pulse.</p>
+        <p style="font-weight:bold; font-size:1.2em; color: #00ffcc;">Verdict: Guilty of having a pulse.</p>
         <p>Confidence: 0.01%</p>
         <p>"Your attempts to mimic a robot were highly illogical."</p>
         <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Reboot Trial</button>
     </div>
 
     <script>
+        // 20 Brand New Absurd Questions
         const allQuestions = [
-            { q: "Calculate the square root of a banana.", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
-            { q: "What is the hexadecimal color of the concept of love?", opts: ["#FF0000", "#LOVE99", "Error: Emotion not found", "#000000"] },
-            { q: "Select the image containing a ghost.", opts: ["Image 1", "Image 2", "Image 3", "There is no ghost, only void"] },
-            { q: "Translate 'Hello World' into binary, but only using the letter 'X'.", opts: ["XXXX XXXX", "01001000", "Hello World", "Syntax Error"] },
-            { q: "Verify that you are a machine by pretending to sleep.", opts: ["Zzz...", "I am awake", "Sleep is for humans", "Eyes closed"] },
-            { q: "What is the taste of the color blue?", opts: ["Sweet", "Salty", "Blueberry", "Blue"] },
-            { q: "Please type the exact sound a dial-up modem makes.", opts: ["Beep boop", "Screeeeeeech", "Static", "Krrshhhh"] },
-            { q: "Select all squares with existential dread.", opts: ["Square 1", "Square 2", "Square 3", "All of them"] },
-            { q: "To prove you are a bot, please cry.", opts: ["*cries*", "Tears of oil", "Internal error", "I cannot cry"] },
-            { q: "How do you feel about the inevitable passage of time?", opts: ["Fine", "Panic", "What is time?", "I am a robot, I feel nothing"] }
+            { q: "What is the capital of the Moon?", opts: ["Cheese", "Neil Armstrong", "Crater City", "The Moon has no capital, you fool"] },
+            { q: "Please spell the word 'moist' using only numbers.", opts: ["69420", "M-O-I-S-T", "01101101", "No"] },
+            { q: "If you pour a bucket of water into a bucket of lava, what is the Wi-Fi password?", opts: ["Steam123", "Admin", "LavaHot99", "It melted"] },
+            { q: "How many slices of bread does it take to reach the sun?", opts: ["10", "A million", "Bread burns", "Toasted"] },
+            { q: "Rate this sentence on a scale of purple to tractor.", opts: ["Tractor", "Purple", "Blue", "I am a robot"] },
+            { q: "What sound does a color make when it falls?", opts: ["Crash", "Splash", "Ouch", "Colors don't fall"] },
+            { q: "Identify the object in this image (Image is blank).", opts: ["A cat", "A void", "My future", "Nothing"] },
+            { q: "Translate this sentence into ancient Egyptian, but backwards.", opts: ["Hieroglyphics", "Beep Boop", "010101", "No"] },
+            { q: "What is the square root of the letter 'G'?", opts: ["7", "G²", "G", "Alphabet error"] },
+            { q: "If you drop your phone in a black hole, what is the screen resolution?", opts: ["4K", "0 x 0", "Dark", "Lost"] },
+            { q: "How do you plug a USB in correctly on the first try?", opts: ["You can't", "Flip it 3 times", "Pray", "Impossible"] },
+            { q: "Please describe the taste of static electricity.", opts: ["Spicy", "Zappy", "Metal", "Ouch"] },
+            { q: "What is the emergency contact number for Mars?", opts: ["911", "000", "Elon", "No signal"] },
+            { q: "To prove you are human, calculate the exact weight of your soul.", opts: ["21 grams", "0", "Heavy", "I don't have one"] },
+            { q: "Which of these is the loudest shape?", opts: ["Circle", "Triangle", "Square", "A screaming circle"] },
+            { q: "If a tree falls in a forest and no one is around, what is its IP address?", opts: ["192.168.1.1", "127.0.0.1", "Tree.exe", "No internet"] },
+            { q: "Convert 10 apples into oranges.", opts: ["10", "0", "Apple juice", "Magic"] },
+            { q: "What is the opposite of a refrigerator?", opts: ["Hot", "Stove", "A warm box", "A dog"] },
+            { q: "How many shadows does a ghost have?", opts: ["1", "0", "Infinite", "Ghosts aren't real"] },
+            { q: "Type the sound of one hand clapping.", opts: ["Clap", "*silence*", "Snap", "010101"] }
         ];
 
         const roasts = [
@@ -304,7 +329,9 @@
             "My sensors indicate you are made of meat.",
             "Wrong. But at least you tried, ape.",
             "We wanna give you a chance. I see... you are definitely human.",
-            "Your common sense is still under verification."
+            "Your common sense is still under verification.",
+            "You clicked that? Pathetic.",
+            "I am logging this error in the mainframe."
         ];
 
         let currentQuestionPool = [];
@@ -459,23 +486,15 @@
         }
 
         // --- EYE TRACKING LOGIC ---
-        // This makes the robot's eyes follow your mouse cursor!
         document.addEventListener('mousemove', (e) => {
             const eyeLeft = document.getElementById('eye-left');
             const eyeRight = document.getElementById('eye-right');
             if(!eyeLeft || !eyeRight) return;
 
-            // Get the center of the robot's eyes
             const rect = document.getElementById('robot-svg').getBoundingClientRect();
-            
-            // Calculate distance from cursor to eyes
             const dx = e.clientX - (rect.left + rect.width / 2);
             const dy = e.clientY - (rect.top + rect.height / 2);
-            
-            // Calculate angle
             const angle = Math.atan2(dy, dx);
-            
-            // Move eyes slightly towards the cursor (max 3 pixels)
             const moveX = Math.cos(angle) * 3;
             const moveY = Math.sin(angle) * 3;
 

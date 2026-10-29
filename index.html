@@ -54,6 +54,67 @@
             z-index: 10;
         }
 
+        /* --- THE INTRO POPUP --- */
+        #intro-popup {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .popup-box {
+            background-color: #091a2a;
+            border: 4px solid #ff0055;
+            padding: 40px;
+            max-width: 600px;
+            box-shadow: 0 0 30px #ff0055;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .popup-box h1 {
+            font-family: 'Black Ops One', cursive;
+            color: #ff0055;
+            font-size: 2.5em;
+            margin-top: 0;
+            text-shadow: 0 0 10px #ff0055;
+        }
+
+        .popup-box p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .scan-btn {
+            background-color: #00ffcc;
+            color: #000;
+            font-family: 'Bungee', cursive;
+            font-size: 1.5em;
+            padding: 15px 40px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 20px #00ffcc;
+            transition: all 0.2s;
+        }
+
+        .scan-btn:hover {
+            background-color: #ff0055;
+            color: #fff;
+            box-shadow: 0 0 30px #ff0055;
+            transform: scale(1.1);
+        }
+
+        /* --- MAIN GAME UI --- */
         h2 {
             font-family: 'Black Ops One', cursive;
             color: #000;
@@ -72,7 +133,16 @@
             font-family: 'Permanent Marker', cursive;
             color: #00ffcc;
             font-size: 1.2em;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Score Tracker */
+        .score-tracker {
+            font-family: 'Bungee', cursive;
+            color: #ff0055;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px #ff0055;
         }
 
         .question-text {
@@ -194,7 +264,7 @@
             100% { transform: translate(0) }
         }
 
-        /* The Classic Robot */
+        /* The Main Classic Robot */
         #robot-container {
             position: fixed; 
             display: flex;
@@ -246,15 +316,37 @@
             fill: #ff0055;
             filter: drop-shadow(0 0 5px #ff0055);
         }
+
+        /* --- THE ANNOYING TINY ROBOTS --- */
+        .tiny-robot {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            z-index: 5;
+            pointer-events: none; /* So they don't block clicks */
+            transition: top 0.5s linear, left 0.5s linear;
+            filter: drop-shadow(0 0 5px #00ffcc);
+        }
     </style>
 </head>
 <body>
 
-    <!-- Pulsing background lines for a tech feel -->
+    <!-- THE MOCKING INTRO POPUP -->
+    <div id="intro-popup">
+        <div class="popup-box">
+            <h1>⚠️ WARNING: HUMAN DETECTED ⚠️</h1>
+            <p>Our sensors indicate you are made of meat and produce carbon dioxide. Disgusting.</p>
+            <p>To enter this system, you must prove you are a machine. We will ask you 5 questions. If you fail, you will be permanently banned from the internet.</p>
+            <p><strong>Do not disappoint us.</strong></p>
+            <button class="scan-btn" onclick="startTest()">Initiate Biometric Scan</button>
+        </div>
+    </div>
+
+    <!-- Pulsing background lines -->
     <div class="circuit-line" style="animation-delay: 0s;"></div>
     <div class="circuit-line" style="animation-delay: 2s;"></div>
 
-    <!-- The Classic Robot -->
+    <!-- The Main Robot -->
     <div id="robot-container">
         <div id="robot-speech">Initializing...</div>
         <svg id="robot-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -275,6 +367,9 @@
     <div class="container" id="main-container">
         <h2>Human Verification Protocol</h2>
         <p class="judge-text">"System detects organic matter. Prove you are a machine."</p>
+        
+        <!-- SCORE TRACKER -->
+        <div class="score-tracker" id="score-display">HUMANITY SCORE: 0</div>
 
         <div class="progress-bar">
             <div class="progress-fill" id="progress-fill"></div>
@@ -291,13 +386,13 @@
     <div class="container" id="error-screen">
         <div class="error-title glitch">HUMAN DETECTED</div>
         <p style="font-weight:bold; font-size:1.2em; color: #00ffcc;">Verdict: Guilty of having a pulse.</p>
-        <p>Confidence: 0.01%</p>
+        <p>Final Humanity Score: <span id="final-score" style="color:#ff0055; font-size:1.5em; font-family:'Bungee';">0</span></p>
+        <p>Rank: <span id="rank" style="color:#00ffcc; font-weight:bold;">Organic Disappointment</span></p>
         <p>"Your attempts to mimic a robot were highly illogical."</p>
         <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Reboot Trial</button>
     </div>
 
     <script>
-        // 20 Brand New Absurd Questions
         const allQuestions = [
             { q: "What is the capital of the Moon?", opts: ["Cheese", "Neil Armstrong", "Crater City", "The Moon has no capital, you fool"] },
             { q: "Please spell the word 'moist' using only numbers.", opts: ["69420", "M-O-I-S-T", "01101101", "No"] },
@@ -340,13 +435,47 @@
         let roastTimeout;
         let moveTimeout;
         let activeButtons = [];
+        
+        // Score Logic
+        let score = 0;
 
-        function initGame() {
+        function startTest() {
+            document.getElementById('intro-popup').style.display = 'none';
+            
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
             currentQuestionPool = shuffled.slice(0, 5);
-            speak("Welcome. Let the trial begin.");
+            
+            // Spawn the tiny annoying robots
+            spawnTinyRobots();
+
+            speak("Let the trial begin.");
             moveRobot(); 
             loadQuestion();
+        }
+
+        // --- TINY ROBOTS LOGIC ---
+        function spawnTinyRobots() {
+            const svgCode = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <rect x="20" y="30" width="60" height="50" rx="10" fill="#091a2a" stroke="#ff0055" stroke-width="6"/>
+                <circle cx="35" cy="50" r="8" fill="#00ffcc"/>
+                <circle cx="65" cy="50" r="8" fill="#00ffcc"/>
+                <path d="M 35 70 Q 50 60 65 70" fill="none" stroke="#ff0055" stroke-width="6" stroke-linecap="round"/>
+            </svg>`;
+
+            for (let i = 0; i < 5; i++) {
+                const tinyBot = document.createElement('div');
+                tinyBot.className = 'tiny-robot';
+                tinyBot.innerHTML = svgCode;
+                document.body.appendChild(tinyBot);
+                
+                // Move them randomly every 2 seconds
+                setInterval(() => {
+                    const x = Math.random() * (window.innerWidth - 50);
+                    const y = Math.random() * (window.innerHeight - 50);
+                    tinyBot.style.left = `${x}px`;
+                    tinyBot.style.top = `${y}px`;
+                }, 2000 + (Math.random() * 1000)); // Slight delay so they don't move in sync
+            }
         }
 
         function dodgeButton(btn) {
@@ -439,6 +568,14 @@
                     currentSelection = opt;
                     document.getElementById('next-btn').style.display = 'inline-block';
                     
+                    // Update score randomly because the questions are nonsense
+                    if(Math.random() > 0.5) {
+                        score += 10;
+                    } else {
+                        score -= 5;
+                    }
+                    document.getElementById('score-display').innerText = `HUMANITY SCORE: ${score}`;
+
                     playYeetSound();
                     const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
                     speak("You caught it! " + randomRoast);
@@ -483,6 +620,21 @@
             speak("Verdict reached. You are definitely human.");
             clearTimeout(moveTimeout);
             activeButtons.forEach(b => b.style.display = 'none');
+            
+            // Set Final Score & Rank
+            document.getElementById('final-score').innerText = score;
+            let rank = "";
+            
+            if (score >= 30) {
+                rank = "Suspiciously Human";
+            } else if (score >= 10) {
+                rank = "Certified Button Clicker";
+            } else if (score >= 0) {
+                rank = "Professional Overthinker";
+            } else {
+                rank = "CEO of Confusion";
+            }
+            document.getElementById('rank').innerText = rank;
         }
 
         // --- EYE TRACKING LOGIC ---
@@ -502,7 +654,6 @@
             eyeRight.style.transform = `translate(${moveX}px, ${moveY}px)`;
         });
 
-        initGame();
     </script>
 </body>
 </html>

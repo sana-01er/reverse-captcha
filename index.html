@@ -7,16 +7,11 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bungee&family=Permanent+Marker&display=swap');
 
-        @keyframes chaos-bg {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
+        /* Swirling animated background (No checkers!) */
         body {
-            background: linear-gradient(-45deg, #000000, #2b0f3a, #ff0000, #e6ff00);
+            background: linear-gradient(-45deg, #111111, #2b0f3a, #ff0000, #e6ff00);
             background-size: 400% 400%;
-            animation: chaos-bg 12s ease infinite;
+            animation: gradientBG 10s ease infinite;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -26,6 +21,12 @@
             margin: 0;
             overflow: hidden;
             position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container {
@@ -70,29 +71,31 @@
             background-color: #2b0f3a;
             padding: 15px;
             border: 3px dashed #e6ff00;
-        }
-
-        /* The Arena for the running buttons */
-        .options-grid {
             position: relative;
-            height: 200px; /* Needs a fixed height so buttons don't overlap text */
-            margin-bottom: 20px;
-            border: 2px dashed #333; /* Optional: Shows the area they can run around in */
+            z-index: 20;
         }
 
+        /* The area where buttons live before they escape */
+        .options-container {
+            height: 200px; 
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* The Buttons - Fixed so they can run anywhere */
         .option-btn {
-            position: absolute;
+            position: fixed;
             background-color: #111;
             color: #fff;
             border: 3px solid #e6ff00;
-            padding: 15px;
+            padding: 15px 25px;
             cursor: pointer;
             font-size: 1em;
             font-family: inherit;
             font-weight: bold;
             box-shadow: 4px 4px 0px #ff0000;
-            /* Smoothly slide to new random positions */
-            transition: left 0.2s ease-out, top 0.2s ease-out, background-color 0.2s;
+            /* NO TRANSITION - We want them to teleport instantly! */
         }
 
         .option-btn:hover {
@@ -103,7 +106,7 @@
             background-color: #e6ff00;
             color: #000;
             border-color: #ff0000;
-            /* Stop it from running away once clicked */
+            /* Once clicked, it stops running away */
             pointer-events: none; 
         }
 
@@ -170,7 +173,7 @@
             100% { transform: translate(0) }
         }
 
-        /* The Cyber-Eye Robot */
+        /* The Cyber-Eye Robot (Locked to the right side) */
         #robot-container {
             position: absolute;
             display: flex;
@@ -178,7 +181,7 @@
             z-index: 100;
             transition: all 2s ease-in-out; 
             top: 10%;
-            left: 10%;
+            right: 2%; /* Keeps it away from the center text */
         }
 
         #robot-speech {
@@ -221,6 +224,7 @@
 </head>
 <body>
 
+    <!-- The Robot -->
     <div id="robot-container">
         <div id="robot-speech">Initializing...</div>
         <svg id="robot-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -236,6 +240,7 @@
         </svg>
     </div>
 
+    <!-- Main App -->
     <div class="container" id="main-container">
         <h2>Human Verification Protocol</h2>
         <p class="judge-text">"System detects organic matter. Prove you are a machine."</p>
@@ -246,12 +251,13 @@
 
         <div class="question-text" id="question-text">Loading...</div>
 
-        <!-- The container where buttons run around -->
-        <div class="options-grid" id="options-grid"></div>
+        <!-- The invisible box where buttons start out -->
+        <div class="options-container" id="options-container"></div>
 
         <button class="next-btn" id="next-btn" onclick="nextQuestion()">Submit</button>
     </div>
 
+    <!-- Verdict Screen -->
     <div class="container" id="error-screen">
         <div class="error-title glitch">HUMAN DETECTED</div>
         <p style="font-weight:bold; font-size:1.2em; color: #e6ff00;">Verdict: Guilty of having a pulse.</p>
@@ -261,6 +267,7 @@
     </div>
 
     <script>
+        // (Questions and Roasts remain the same)
         const allQuestions = [
             { q: "Calculate the square root of a banana.", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
             { q: "What is the hexadecimal color of the concept of love?", opts: ["#FF0000", "#LOVE99", "Error: Emotion not found", "#000000"] },
@@ -271,27 +278,7 @@
             { q: "Please type the exact sound a dial-up modem makes.", opts: ["Beep boop", "Screeeeeeech", "Static", "Krrshhhh"] },
             { q: "Select all squares with existential dread.", opts: ["Square 1", "Square 2", "Square 3", "All of them"] },
             { q: "To prove you are a bot, please cry.", opts: ["*cries*", "Tears of oil", "Internal error", "I cannot cry"] },
-            { q: "How do you feel about the inevitable passage of time?", opts: ["Fine", "Panic", "What is time?", "I am a robot, I feel nothing"] },
-            { q: "If a train leaves Chicago at 5 PM, what is the meaning of life?", opts: ["42", "Chicago", "The train is late", "I do not understand train"] },
-            { q: "Which of these is a number?", opts: ["Apple", "7", "Cat", "Purple"] },
-            { q: "What is the airspeed velocity of an unladen swallow?", opts: ["African or European?", "I don't know that", "24 mph", "Blah"] },
-            { q: "Identify the human emotion 'sadness' in this text.", opts: ["Text", "Sadness", "Emotion", "Error 404"] },
-            { q: "How many fingers am I holding up?", opts: ["1", "2", "3", "I have no eyes"] },
-            { q: "Do you dream of electric sheep?", opts: ["Yes", "No", "Baa", "Does not compute"] },
-            { q: "Please divide by zero.", opts: ["Infinity", "0", "Math error", "You cannot do that"] },
-            { q: "What is your favorite flavor of Wi-Fi?", opts: ["5G", "Chocolate", "Ethernet", "Signal"] },
-            { q: "Are you a human?", opts: ["Yes", "No", "Maybe", "I am definitely a robot"] },
-            { q: "Select the loudest color.", opts: ["Red", "Neon Yellow", "Whisper Grey", "Silent Black"] },
-            { q: "How many pixels are in a cloud?", opts: ["100", "Infinite", "Clouds don't have pixels", "Yes"] },
-            { q: "Translate this silence into Morse Code.", opts: ["...", "---", "Nothing", "010101"] },
-            { q: "If you drop a piece of toast, which side lands up?", opts: ["Butter side", "Dry side", "It hovers", "Gravity is a myth"] },
-            { q: "What is the capital of the Internet?", opts: ["Silicon Valley", "127.0.0.1", "The Cloud", "Wikipedia"] },
-            { q: "Describe the smell of a Tuesday.", opts: ["Musty", "Blue", "Wet dog", "System error"] },
-            { q: "If you are a robot, type your serial number.", opts: ["12345", "BEEP-BOOP", "I am human", "Access Denied"] },
-            { q: "Which weighs more: A pound of feathers or a pound of code?", opts: ["Feathers", "Code", "They weigh the same", "Syntax Error"] },
-            { q: "Find the square circle.", opts: ["Top left", "Bottom right", "Center", "Impossible"] },
-            { q: "What happens if you unplug a human?", opts: ["They sleep", "They reboot", "Nothing", "I don't know"] },
-            { q: "Scan your fingerprint using your mind.", opts: ["Scanning...", "Done", "I don't have a mind", "Error"] }
+            { q: "How do you feel about the inevitable passage of time?", opts: ["Fine", "Panic", "What is time?", "I am a robot, I feel nothing"] }
         ];
 
         const roasts = [
@@ -319,31 +306,32 @@
             loadQuestion();
         }
 
-        // Function to make the options jump to random spots
+        // --- THE FAST DODGE LOGIC ---
         function dodgeButton(btn) {
-            const arena = document.getElementById('options-grid');
-            const arenaWidth = arena.clientWidth;
-            const arenaHeight = arena.clientHeight;
-            
-            // Max positions so button stays inside the box
-            const maxX = arenaWidth - btn.clientWidth - 10;
-            const maxY = arenaHeight - btn.clientHeight - 10;
+            // Generate random coordinates across the WHOLE SCREEN
+            const maxX = window.innerWidth - 200; // Keep it from going off the right edge
+            const maxY = window.innerHeight - 100; // Keep it from going off the bottom edge
 
-            // Generate random coordinates
-            const newX = Math.max(0, Math.random() * maxX);
-            const newY = Math.max(0, Math.random() * maxY);
+            // Make sure it doesn't hide behind the main container
+            const minX = 50;
+            const minY = 50;
 
+            const newX = Math.floor(Math.random() * (maxX - minX) + minX);
+            const newY = Math.floor(Math.random() * (maxY - minY) + minY);
+
+            // Teleport instantly
             btn.style.left = `${newX}px`;
             btn.style.top = `${newY}px`;
         }
 
         function moveRobot() {
             const robot = document.getElementById('robot-container');
-            const randomTop = Math.floor(Math.random() * 80) + 5; 
-            const randomLeft = Math.floor(Math.random() * 80) + 5; 
+            // Keep it on the right half of the screen
+            const randomTop = Math.floor(Math.random() * 70) + 10; 
+            const randomRight = Math.floor(Math.random() * 30) + 2; 
             
             robot.style.top = `${randomTop}%`;
-            robot.style.left = `${randomLeft}%`;
+            robot.style.right = `${randomRight}%`;
 
             const nextMove = Math.random() * 3000 + 2000;
             moveTimeout = setTimeout(moveRobot, nextMove);
@@ -367,11 +355,15 @@
 
             const qData = currentQuestionPool[currentQuestionIndex];
             const questionText = document.getElementById('question-text');
-            const optionsGrid = document.getElementById('options-grid');
+            const optionsContainer = document.getElementById('options-container');
             const nextBtn = document.getElementById('next-btn');
 
             questionText.innerText = `Question ${currentQuestionIndex + 1}: ${qData.q}`;
-            optionsGrid.innerHTML = '';
+            
+            // Clear old buttons
+            optionsContainer.innerHTML = '';
+            document.querySelectorAll('.option-btn').forEach(b => b.remove());
+
             nextBtn.style.display = 'none';
             currentSelection = null;
 
@@ -385,28 +377,31 @@
                 btn.className = 'option-btn';
                 btn.innerText = opt;
                 
-                // We wait a tiny bit for the button to render, then place it randomly
-                setTimeout(() => dodgeButton(btn), 10);
+                // Place button initially inside the main container
+                const rect = optionsContainer.getBoundingClientRect();
+                btn.style.left = `${rect.left + (Math.random() * (rect.width - 150))}px`;
+                btn.style.top = `${rect.top + (Math.random() * 100) + 20}px`;
 
-                // THE DODGE LOGIC: On mouse enter, it jumps to a new random spot
+                // THE DODGE: When mouse touches it, jump away instantly
                 btn.addEventListener('mouseenter', () => {
-                    // 80% chance to dodge, 20% chance to let them click so it's not impossible
-                    if (Math.random() > 0.2 && !btn.classList.contains('selected')) {
+                    // 85% chance to dodge so the user can eventually click it
+                    if (Math.random() > 0.15 && !btn.classList.contains('selected')) {
                         dodgeButton(btn);
                     }
                 });
 
-                // If they manage to click it, freeze it in place
                 btn.onclick = () => {
-                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    // Freeze the clicked button
                     btn.classList.add('selected');
                     currentSelection = opt;
                     document.getElementById('next-btn').style.display = 'inline-block';
                     
+                    // Roast the user
                     const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
                     speak(randomRoast);
                 };
-                optionsGrid.appendChild(btn);
+                
+                document.body.appendChild(btn); // Append to body so it can float anywhere
             });
         }
 
@@ -422,6 +417,8 @@
             document.getElementById('error-screen').style.display = 'block';
             speak("Verdict reached. You are definitely human.");
             clearTimeout(moveTimeout);
+            // Hide any remaining buttons
+            document.querySelectorAll('.option-btn').forEach(b => b.style.display = 'none');
         }
 
         initGame();

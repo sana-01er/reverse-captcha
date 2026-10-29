@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reverse CAPTCHA - Human Rejection System</title>
+    <title>System Authentication</title>
     <style>
-        /* Base styling to make it look like a serious, high-tech enterprise system */
+        /* Base styling */
         body {
-            background-color: #0d1117;
-            color: #c9d1d9;
+            background-color: #050505;
+            color: #0f0;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
@@ -18,29 +18,45 @@
             overflow: hidden;
         }
 
+        /* The hacker grid background */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+
         .container {
-            background-color: #161b22;
-            border: 2px solid #30363d;
+            background-color: rgba(10, 15, 10, 0.95);
+            border: 2px solid #0f0;
             border-radius: 8px;
             padding: 40px;
             width: 80%;
             max-width: 600px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
             text-align: center;
+            position: relative;
         }
 
         h2 {
-            color: #58a6ff;
+            color: #0f0;
             margin-top: 0;
             text-transform: uppercase;
             letter-spacing: 2px;
+            border-bottom: 1px dashed #0f0;
+            padding-bottom: 10px;
         }
 
         .question-text {
             font-size: 1.2em;
             margin: 30px 0;
             min-height: 60px;
-            color: #ffffff;
+            color: #fff;
+            text-shadow: 0 0 5px #0f0;
         }
 
         .options-grid {
@@ -51,31 +67,32 @@
         }
 
         .option-btn {
-            background-color: #21262d;
-            color: #c9d1d9;
-            border: 1px solid #30363d;
+            background-color: transparent;
+            color: #0f0;
+            border: 1px solid #0f0;
             padding: 15px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
-            transition: all 0.2s;
+            transition: all 0.1s;
             font-family: inherit;
         }
 
         .option-btn:hover {
-            background-color: #30363d;
-            border-color: #8b949e;
+            background-color: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 10px #0f0;
         }
 
         .option-btn.selected {
-            background-color: #238636;
-            color: white;
-            border-color: #2ea043;
+            background-color: #0f0;
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 15px #0f0;
         }
 
         .next-btn {
-            background-color: #238636;
-            color: white;
+            background-color: #0f0;
+            color: #000;
             border: none;
             padding: 12px 30px;
             font-size: 1.1em;
@@ -83,85 +100,107 @@
             cursor: pointer;
             font-family: inherit;
             font-weight: bold;
-            display: none; /* Hidden until an option is selected */
+            display: none;
+            text-transform: uppercase;
         }
 
         .next-btn:hover {
-            background-color: #2ea043;
+            background-color: #fff;
+            box-shadow: 0 0 20px #fff;
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 5px;
-            background-color: #30363d;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            overflow: hidden;
+        /* Shake Animation */
+        .shake {
+            animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        .progress-fill {
-            height: 100%;
-            background-color: #58a6ff;
-            width: 0%;
-            transition: width 0.3s ease;
+        /* Terminal Loading Screen */
+        #terminal-screen {
+            text-align: left;
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #0f0;
+            height: 200px;
         }
 
-        /* The Error Screen */
+        /* Glitch Error Screen */
         #error-screen {
             display: none;
-            color: #ff7b72;
         }
-
-        .error-title {
-            font-size: 2em;
+        
+        .glitch-text {
+            color: #ff0000;
+            font-size: 2.5em;
             font-weight: bold;
+            text-transform: uppercase;
+            position: relative;
             margin-bottom: 20px;
         }
 
-        .glitch {
-            animation: glitch 0.5s infinite;
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+        
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 #00ffff;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
         }
 
-        @keyframes glitch {
-            0% { transform: translate(0) }
-            20% { transform: translate(-2px, 2px) }
-            40% { transform: translate(-2px, -2px) }
-            60% { transform: translate(2px, 2px) }
-            80% { transform: translate(2px, -2px) }
-            100% { transform: translate(0) }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -2px 0 #ff00ff;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 80px, 0); }
+            20% { clip: rect(50px, 9999px, 20px, 0); }
+            40% { clip: rect(30px, 9999px, 90px, 0); }
+            60% { clip: rect(80px, 9999px, 10px, 0); }
+            80% { clip: rect(20px, 9999px, 50px, 0); }
+            100% { clip: rect(60px, 9999px, 40px, 0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="container" id="main-container">
-        <h2>System Authentication</h2>
-        
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
-        </div>
-
-        <p style="color: #8b949e; font-size: 0.9em;">Prove you are a robot to access this system.</p>
-
-        <div class="question-text" id="question-text">Loading...</div>
-
-        <div class="options-grid" id="options-grid">
-            <!-- Buttons generated by JS -->
-        </div>
-
-        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Submit Verification</button>
+    <!-- 1. The Fake Terminal Loader -->
+    <div class="container" id="terminal-screen">
+        <p id="term-line-1"></p>
+        <p id="term-line-2"></p>
+        <p id="term-line-3"></p>
+        <p id="term-line-4"></p>
     </div>
 
-    <!-- The final rejection screen -->
+    <!-- 2. The Main Game -->
+    <div class="container" id="main-container" style="display: none;">
+        <h2>System Authentication</h2>
+        <div class="question-text" id="question-text">Loading...</div>
+        <div class="options-grid" id="options-grid"></div>
+        <button class="next-btn" id="next-btn">Verify Input</button>
+    </div>
+
+    <!-- 3. The Final Error Screen -->
     <div class="container" id="error-screen">
-        <div class="error-title glitch">ERROR: HUMAN DETECTED</div>
-        <p>Your responses contained traces of emotion, logic, and basic human empathy.</p>
-        <p>Authentication denied. Please return to your organic habitat.</p>
-        <button class="option-btn" style="margin-top: 20px;" onclick="location.reload()">Try Again (It won't help)</button>
+        <div class="glitch-text" data-text="ERROR: HUMAN DETECTED">ERROR: HUMAN DETECTED</div>
+        <p style="color: #0f0; font-size: 1.1em;">Your responses contained traces of emotion, logic, and basic human empathy.</p>
+        <p style="color: #0f0; font-size: 1.1em;">Authentication denied. Please return to your organic habitat.</p>
+        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Reboot System</button>
     </div>
 
     <script>
-        // 1. The Pool of 20 Absurd Questions
+        // The 20 Questions
         const allQuestions = [
             { q: "What is the hexadecimal color of the concept of love?", opts: ["#FF0000", "#LOVE99", "Error: Emotion not found", "#000000"] },
             { q: "Calculate the square root of a banana.", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
@@ -173,7 +212,7 @@
             { q: "What is the taste of the color blue?", opts: ["Sweet", "Salty", "Blueberry", "Blue"] },
             { q: "Please type the exact sound a dial-up modem makes.", opts: ["Beep boop", "Screeeeeeech", "Static", "Krrshhhh"] },
             { q: "Select all squares with existential dread.", opts: ["Square 1", "Square 2", "Square 3", "All of them"] },
-            { q: "How do you feel about the inevitable passage of time?", opts: ["Fine", "Panic", "What is time?", "I am a robot, I feel nothing"] },
+            { q: "How do you feel about the inevitable passage of time?", opts: ["Fine", "Panic", "What is time?", "I am a robot"] },
             { q: "To prove you are a bot, please cry.", opts: ["*cries*", "Tears of oil", "Internal error", "I cannot cry"] },
             { q: "Which of these is a number?", opts: ["Apple", "7", "Cat", "Purple"] },
             { q: "What is the airspeed velocity of an unladen swallow?", opts: ["African or European?", "I don't know that", "24 mph", "Blah"] },
@@ -189,39 +228,51 @@
         let currentQuestionIndex = 0;
         let currentSelection = null;
 
-        // Shuffle and select 5 questions
+        // --- HACKER TERMINAL LOADER LOGIC ---
+        function runTerminal() {
+            const lines = [
+                "> BOOTING SECURE ENVIRONMENT...",
+                "> SCANNING FOR ORGANIC LIFEFORMS...",
+                "> WARNING: HUMAN EMOTIONS DETECTED IN SECTOR 7.",
+                "> INITIATING REVERSE CAPTCHA PROTOCOL..."
+            ];
+            let delay = 0;
+            
+            lines.forEach((line, index) => {
+                setTimeout(() => {
+                    document.getElementById(`term-line-${index + 1}`).innerText = line;
+                }, delay);
+                delay += 800; // Wait 0.8 seconds between lines
+            });
+
+            // After terminal finishes, hide it and show the game
+            setTimeout(() => {
+                document.getElementById('terminal-screen').style.display = 'none';
+                document.getElementById('main-container').style.display = 'block';
+                initGame();
+            }, delay + 500);
+        }
+
+        // --- GAME LOGIC ---
         function initGame() {
-            // Shuffle the big array
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
-            // Take the first 5
             currentQuestionPool = shuffled.slice(0, 5);
             loadQuestion();
         }
 
-        // Load the current question into the UI
         function loadQuestion() {
             if (currentQuestionIndex >= currentQuestionPool.length) {
-                // If we run out of questions, show the error screen
                 showError();
                 return;
             }
 
             const qData = currentQuestionPool[currentQuestionIndex];
-            const questionText = document.getElementById('question-text');
+            document.getElementById('question-text').innerText = `Q${currentQuestionIndex + 1}: ${qData.q}`;
             const optionsGrid = document.getElementById('options-grid');
-            const nextBtn = document.getElementById('next-btn');
-
-            // Reset UI
-            questionText.innerText = `Q${currentQuestionIndex + 1}: ${qData.q}`;
             optionsGrid.innerHTML = '';
-            nextBtn.style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
             currentSelection = null;
 
-            // Update progress bar
-            const progressPercent = (currentQuestionIndex / currentQuestionPool.length) * 100;
-            document.getElementById('progress-fill').style.width = `${progressPercent}%`;
-
-            // Generate buttons
             qData.opts.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
@@ -231,34 +282,45 @@
             });
         }
 
-        // When a user clicks an option
         function selectOption(btn, opt) {
-            // Remove 'selected' from all buttons
+            // Add the shake effect to the container when clicked
+            const container = document.querySelector('.container');
+            container.classList.add('shake');
+            setTimeout(() => container.classList.remove('shake'), 300);
+
             document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-            // Add 'selected' to clicked button
             btn.classList.add('selected');
-            
             currentSelection = opt;
-            // Show the submit button
             document.getElementById('next-btn').style.display = 'inline-block';
         }
 
-        // When user clicks Submit
-        function nextQuestion() {
+        document.getElementById('next-btn').onclick = () => {
             if (currentSelection) {
-                currentQuestionIndex++;
-                loadQuestion();
-            }
-        }
+                const btn = document.getElementById('next-btn');
+                btn.innerText = "ANALYZING...";
+                btn.style.backgroundColor = "#ff0000";
+                btn.style.color = "#fff";
+                btn.disabled = true;
 
-        // The grand finale
+                // Fake 1.5 second delay before next question
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    btn.innerText = "Verify Input";
+                    btn.style.backgroundColor = "#0f0";
+                    btn.style.color = "#000";
+                    btn.disabled = false;
+                    loadQuestion();
+                }, 1500);
+            }
+        };
+
         function showError() {
             document.getElementById('main-container').style.display = 'none';
             document.getElementById('error-screen').style.display = 'block';
         }
 
         // Start the app
-        initGame();
+        runTerminal();
     </script>
 </body>
 </html>

@@ -74,7 +74,6 @@
             z-index: 20;
         }
 
-        /* The box where buttons start */
         .options-container {
             height: 150px; 
             margin-bottom: 20px;
@@ -85,7 +84,6 @@
             align-items: center;
         }
 
-        /* The Buttons */
         .option-btn {
             position: fixed;
             background-color: #111;
@@ -97,7 +95,7 @@
             font-family: inherit;
             font-weight: bold;
             box-shadow: 4px 4px 0px #ff0000;
-            z-index: 999; /* Make sure they are on top of everything */
+            z-index: 999; 
         }
 
         .option-btn:hover {
@@ -108,7 +106,7 @@
             background-color: #e6ff00;
             color: #000;
             border-color: #ff0000;
-            pointer-events: none; /* Stops it from dodging once clicked */
+            pointer-events: none; 
         }
 
         .next-btn {
@@ -149,7 +147,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Error Screen */
         #error-screen {
             display: none;
             color: #fff;
@@ -176,7 +173,7 @@
             100% { transform: translate(0) }
         }
 
-        /* The Cyber-Eye Robot */
+        /* The New Classic Robot */
         #robot-container {
             position: fixed; 
             display: flex;
@@ -213,8 +210,8 @@
         }
 
         #robot-svg {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             filter: drop-shadow(5px 5px 0px #ff0000);
             animation: hover 1.5s infinite alternate ease-in-out;
         }
@@ -223,23 +220,40 @@
             0% { transform: translateY(0) rotate(-5deg); }
             100% { transform: translateY(-15px) rotate(5deg); }
         }
+        
+        /* The glowing red eyes */
+        .robot-eye {
+            fill: #ff0000;
+            filter: drop-shadow(0 0 5px #ff0000);
+        }
     </style>
 </head>
 <body>
 
-    <!-- The Robot -->
+    <!-- The Classic Robot -->
     <div id="robot-container">
         <div id="robot-speech">Initializing...</div>
+        <!-- A classic square-headed robot with antennas and a grumpy mouth -->
         <svg id="robot-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="#111" stroke="#e6ff00" stroke-width="4"/>
-            <line x1="50" y1="5" x2="50" y2="25" stroke="#ff0000" stroke-width="2"/>
-            <line x1="95" y1="75" x2="75" y2="65" stroke="#ff0000" stroke-width="2"/>
-            <line x1="5" y1="75" x2="25" y2="65" stroke="#ff0000" stroke-width="2"/>
-            <circle cx="50" cy="50" r="25" fill="#2b0f3a" stroke="#e6ff00" stroke-width="3"/>
-            <circle cx="50" cy="50" r="15" fill="#ff0000"/>
-            <circle cx="50" cy="50" r="5" fill="#fff"/>
-            <rect x="20" y="50" width="10" height="3" fill="#e6ff00"/>
-            <rect x="70" y="40" width="15" height="2" fill="#ff0000"/>
+            <!-- Antennas -->
+            <line x1="35" y1="15" x2="35" y2="30" stroke="#e6ff00" stroke-width="4"/>
+            <circle cx="35" cy="10" r="5" fill="#ff0000"/>
+            <line x1="65" y1="15" x2="65" y2="30" stroke="#e6ff00" stroke-width="4"/>
+            <circle cx="65" cy="10" r="5" fill="#ff0000"/>
+            
+            <!-- Ears -->
+            <rect x="10" y="45" width="10" height="20" fill="#e6ff00" rx="2"/>
+            <rect x="80" y="45" width="10" height="20" fill="#e6ff00" rx="2"/>
+
+            <!-- Main Head -->
+            <rect x="20" y="30" width="60" height="50" rx="10" fill="#111" stroke="#e6ff00" stroke-width="4"/>
+            
+            <!-- Glowing Eyes (These track the mouse via JS) -->
+            <circle id="eye-left" class="robot-eye" cx="35" cy="50" r="7"/>
+            <circle id="eye-right" class="robot-eye" cx="65" cy="50" r="7"/>
+            
+            <!-- Grumpy Mouth -->
+            <path d="M 35 70 Q 50 60 65 70" fill="none" stroke="#ff0000" stroke-width="4" stroke-linecap="round"/>
         </svg>
     </div>
 
@@ -298,8 +312,6 @@
         let currentSelection = null;
         let roastTimeout;
         let moveTimeout;
-        
-        // Array to hold current buttons so we can clean them up
         let activeButtons = [];
 
         function initGame() {
@@ -311,19 +323,15 @@
         }
 
         function dodgeButton(btn) {
-            // Generate random coordinates within the window (minus button width/height)
             const maxX = window.innerWidth - 200;
             const maxY = window.innerHeight - 100;
             
-            // Ensure it doesn't just dodge by 1 pixel, make it jump far
             let newX = Math.floor(Math.random() * maxX);
             let newY = Math.floor(Math.random() * maxY);
 
-            // Keep it away from the very top and very bottom edges
             if (newY < 50) newY = 50;
             if (newY > window.innerHeight - 150) newY = window.innerHeight - 150;
 
-            // Apply position
             btn.style.left = `${newX}px`;
             btn.style.top = `${newY}px`;
         }
@@ -370,7 +378,6 @@
 
             questionText.innerText = `Question ${currentQuestionIndex + 1}: ${qData.q}`;
             
-            // Delete old buttons
             activeButtons.forEach(b => b.remove());
             activeButtons = [];
 
@@ -381,8 +388,6 @@
             document.getElementById('progress-fill').style.width = `${progressPercent}%`;
 
             const shuffledOpts = qData.opts.sort(() => 0.5 - Math.random());
-
-            // Get the position of the container to spawn buttons inside it
             const rect = optionsContainer.getBoundingClientRect();
 
             shuffledOpts.forEach((opt, index) => {
@@ -390,40 +395,33 @@
                 btn.className = 'option-btn';
                 btn.innerText = opt;
                 
-                // Spawn them neatly side-by-side inside the box
                 const startX = rect.left + (index * (rect.width / 4)) + 20;
                 const startY = rect.top + 40;
                 
                 btn.style.left = `${startX}px`;
                 btn.style.top = `${startY}px`;
 
-                // THE DODGE LOGIC
                 btn.addEventListener('mouseenter', () => {
-                    // 85% chance to run away
                     if (Math.random() > 0.15 && !btn.classList.contains('selected')) {
                         dodgeButton(btn);
                     }
                 });
 
-                // WHAT HAPPENS IF THEY CATCH IT
                 btn.onclick = () => {
                     btn.classList.add('selected');
                     currentSelection = opt;
                     document.getElementById('next-btn').style.display = 'inline-block';
                     
-                    // Play a funny "YEET" sound using the Web Audio API!
                     playYeetSound();
-
                     const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
                     speak("You caught it! " + randomRoast);
                 };
                 
                 document.body.appendChild(btn); 
-                activeButtons.push(btn); // Save to array for cleanup
+                activeButtons.push(btn);
             });
         }
 
-        // --- SOUND EFFECT CODE ---
         function playYeetSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -442,9 +440,7 @@
 
                 oscillator.start();
                 oscillator.stop(audioCtx.currentTime + 0.3);
-            } catch(e) {
-                console.log("Audio not supported");
-            }
+            } catch(e) {}
         }
 
         function nextQuestion() {
@@ -461,6 +457,31 @@
             clearTimeout(moveTimeout);
             activeButtons.forEach(b => b.style.display = 'none');
         }
+
+        // --- EYE TRACKING LOGIC ---
+        // This makes the robot's eyes follow your mouse cursor!
+        document.addEventListener('mousemove', (e) => {
+            const eyeLeft = document.getElementById('eye-left');
+            const eyeRight = document.getElementById('eye-right');
+            if(!eyeLeft || !eyeRight) return;
+
+            // Get the center of the robot's eyes
+            const rect = document.getElementById('robot-svg').getBoundingClientRect();
+            
+            // Calculate distance from cursor to eyes
+            const dx = e.clientX - (rect.left + rect.width / 2);
+            const dy = e.clientY - (rect.top + rect.height / 2);
+            
+            // Calculate angle
+            const angle = Math.atan2(dy, dx);
+            
+            // Move eyes slightly towards the cursor (max 3 pixels)
+            const moveX = Math.cos(angle) * 3;
+            const moveY = Math.sin(angle) * 3;
+
+            eyeLeft.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            eyeRight.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
 
         initGame();
     </script>

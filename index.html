@@ -25,7 +25,6 @@
             position: relative;
         }
 
-        /* Pulsing Circuit Line */
         .circuit-line {
             position: absolute;
             background: linear-gradient(90deg, transparent, #00ffcc, transparent);
@@ -136,7 +135,6 @@
             margin-bottom: 10px;
         }
 
-        /* Score Tracker */
         .score-tracker {
             font-family: 'Bungee', cursive;
             color: #ff0055;
@@ -264,7 +262,6 @@
             100% { transform: translate(0) }
         }
 
-        /* The Main Classic Robot */
         #robot-container {
             position: fixed; 
             display: flex;
@@ -317,13 +314,12 @@
             filter: drop-shadow(0 0 5px #ff0055);
         }
 
-        /* --- THE ANNOYING TINY ROBOTS --- */
         .tiny-robot {
             position: fixed;
             width: 40px;
             height: 40px;
             z-index: 5;
-            pointer-events: none; /* So they don't block clicks */
+            pointer-events: none; 
             transition: top 0.5s linear, left 0.5s linear;
             filter: drop-shadow(0 0 5px #00ffcc);
         }
@@ -331,22 +327,20 @@
 </head>
 <body>
 
-    <!-- THE MOCKING INTRO POPUP -->
     <div id="intro-popup">
         <div class="popup-box">
             <h1>⚠️ WARNING: HUMAN DETECTED ⚠️</h1>
             <p>Our sensors indicate you are made of meat and produce carbon dioxide. Disgusting.</p>
             <p>To enter this system, you must prove you are a machine. We will ask you 5 questions. If you fail, you will be permanently banned from the internet.</p>
             <p><strong>Do not disappoint us.</strong></p>
+            <!-- Clicking this will unlock the audio and start the test -->
             <button class="scan-btn" onclick="startTest()">Initiate Biometric Scan</button>
         </div>
     </div>
 
-    <!-- Pulsing background lines -->
     <div class="circuit-line" style="animation-delay: 0s;"></div>
     <div class="circuit-line" style="animation-delay: 2s;"></div>
 
-    <!-- The Main Robot -->
     <div id="robot-container">
         <div id="robot-speech">Initializing...</div>
         <svg id="robot-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -363,12 +357,9 @@
         </svg>
     </div>
 
-    <!-- Main App -->
     <div class="container" id="main-container">
         <h2>Human Verification Protocol</h2>
         <p class="judge-text">"System detects organic matter. Prove you are a machine."</p>
-        
-        <!-- SCORE TRACKER -->
         <div class="score-tracker" id="score-display">HUMANITY SCORE: 0</div>
 
         <div class="progress-bar">
@@ -376,13 +367,10 @@
         </div>
 
         <div class="question-text" id="question-text">Loading...</div>
-
         <div class="options-container" id="options-container"></div>
-
         <button class="next-btn" id="next-btn" onclick="nextQuestion()">Submit</button>
     </div>
 
-    <!-- Verdict Screen -->
     <div class="container" id="error-screen">
         <div class="error-title glitch">HUMAN DETECTED</div>
         <p style="font-weight:bold; font-size:1.2em; color: #00ffcc;">Verdict: Guilty of having a pulse.</p>
@@ -435,25 +423,39 @@
         let roastTimeout;
         let moveTimeout;
         let activeButtons = [];
-        
-        // Score Logic
         let score = 0;
 
+        // --- VOICE SYNTHESIS SETUP ---
+        let robotVoice = null;
+
+        function setupVoice() {
+            if ('speechSynthesis' in window) {
+                const voices = window.speechSynthesis.getVoices();
+                // Try to find a deep, robotic, or UK voice. Otherwise use default.
+                robotVoice = voices.find(v => v.name.includes('UK English Male')) || 
+                             voices.find(v => v.name.includes('Google UK English Male')) ||
+                             voices.find(v => v.lang.includes('en-GB')) || 
+                             voices[0];
+            }
+        }
+        // Load voices when the page opens
+        window.speechSynthesis.onvoiceschanged = setupVoice;
+
         function startTest() {
+            // Ensure voices are loaded
+            setupVoice();
+            
             document.getElementById('intro-popup').style.display = 'none';
             
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
             currentQuestionPool = shuffled.slice(0, 5);
             
-            // Spawn the tiny annoying robots
             spawnTinyRobots();
-
-            speak("Let the trial begin.");
+            speak("Let the trial begin."); // The first click unlocks the audio!
             moveRobot(); 
             loadQuestion();
         }
 
-        // --- TINY ROBOTS LOGIC ---
         function spawnTinyRobots() {
             const svgCode = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <rect x="20" y="30" width="60" height="50" rx="10" fill="#091a2a" stroke="#ff0055" stroke-width="6"/>
@@ -468,20 +470,18 @@
                 tinyBot.innerHTML = svgCode;
                 document.body.appendChild(tinyBot);
                 
-                // Move them randomly every 2 seconds
                 setInterval(() => {
                     const x = Math.random() * (window.innerWidth - 50);
                     const y = Math.random() * (window.innerHeight - 50);
                     tinyBot.style.left = `${x}px`;
                     tinyBot.style.top = `${y}px`;
-                }, 2000 + (Math.random() * 1000)); // Slight delay so they don't move in sync
+                }, 2000 + (Math.random() * 1000));
             }
         }
 
         function dodgeButton(btn) {
             const maxX = window.innerWidth - 200;
             const maxY = window.innerHeight - 100;
-            
             let newX = Math.floor(Math.random() * maxX);
             let newY = Math.floor(Math.random() * maxY);
 
@@ -500,7 +500,6 @@
                 { top: '80%', left: '5%' },
                 { top: '80%', right: '5%' }
             ];
-            
             const randomCorner = corners[Math.floor(Math.random() * corners.length)];
             
             robot.style.top = randomCorner.top;
@@ -511,7 +510,9 @@
             moveTimeout = setTimeout(moveRobot, nextMove);
         }
 
+        // --- SPEAK FUNCTION ---
         function speak(text) {
+            // 1. Show visual speech bubble
             const speechBubble = document.getElementById('robot-speech');
             speechBubble.innerText = text;
             speechBubble.style.display = 'block';
@@ -519,6 +520,20 @@
             roastTimeout = setTimeout(() => {
                 speechBubble.style.display = 'none';
             }, 4000);
+
+            // 2. Say it out loud
+            if ('speechSynthesis' in window) {
+                // Cancel any currently playing audio so it doesn't overlap
+                window.speechSynthesis.cancel(); 
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                if (robotVoice) utterance.voice = robotVoice;
+                utterance.rate = 1.1; // Slightly faster
+                utterance.pitch = 0.5; // Deep, menacing robot pitch
+                utterance.volume = 1;
+                
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
         function loadQuestion() {
@@ -536,7 +551,6 @@
             
             activeButtons.forEach(b => b.remove());
             activeButtons = [];
-
             nextBtn.style.display = 'none';
             currentSelection = null;
 
@@ -568,12 +582,7 @@
                     currentSelection = opt;
                     document.getElementById('next-btn').style.display = 'inline-block';
                     
-                    // Update score randomly because the questions are nonsense
-                    if(Math.random() > 0.5) {
-                        score += 10;
-                    } else {
-                        score -= 5;
-                    }
+                    if(Math.random() > 0.5) { score += 10; } else { score -= 5; }
                     document.getElementById('score-display').innerText = `HUMANITY SCORE: ${score}`;
 
                     playYeetSound();
@@ -621,23 +630,17 @@
             clearTimeout(moveTimeout);
             activeButtons.forEach(b => b.style.display = 'none');
             
-            // Set Final Score & Rank
             document.getElementById('final-score').innerText = score;
             let rank = "";
             
-            if (score >= 30) {
-                rank = "Suspiciously Human";
-            } else if (score >= 10) {
-                rank = "Certified Button Clicker";
-            } else if (score >= 0) {
-                rank = "Professional Overthinker";
-            } else {
-                rank = "CEO of Confusion";
-            }
+            if (score >= 30) { rank = "Suspiciously Human"; } 
+            else if (score >= 10) { rank = "Certified Button Clicker"; } 
+            else if (score >= 0) { rank = "Professional Overthinker"; } 
+            else { rank = "CEO of Confusion"; }
+            
             document.getElementById('rank').innerText = rank;
         }
 
-        // --- EYE TRACKING LOGIC ---
         document.addEventListener('mousemove', (e) => {
             const eyeLeft = document.getElementById('eye-left');
             const eyeRight = document.getElementById('eye-right');

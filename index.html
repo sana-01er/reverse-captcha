@@ -7,7 +7,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bungee&family=Permanent+Marker&display=swap');
 
-        /* Swirling animated background */
         body {
             background: linear-gradient(-45deg, #111111, #2b0f3a, #ff0000, #e6ff00);
             background-size: 400% 400%;
@@ -75,11 +74,15 @@
             z-index: 20;
         }
 
+        /* The box where buttons start */
         .options-container {
-            height: 200px; 
+            height: 150px; 
             margin-bottom: 20px;
             position: relative;
             z-index: 20;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* The Buttons */
@@ -94,7 +97,7 @@
             font-family: inherit;
             font-weight: bold;
             box-shadow: 4px 4px 0px #ff0000;
-            z-index: 50; /* Make sure they appear above everything */
+            z-index: 999; /* Make sure they are on top of everything */
         }
 
         .option-btn:hover {
@@ -105,7 +108,7 @@
             background-color: #e6ff00;
             color: #000;
             border-color: #ff0000;
-            pointer-events: none; 
+            pointer-events: none; /* Stops it from dodging once clicked */
         }
 
         .next-btn {
@@ -175,7 +178,7 @@
 
         /* The Cyber-Eye Robot */
         #robot-container {
-            position: fixed; /* Fixed to screen, not the box */
+            position: fixed; 
             display: flex;
             align-items: center;
             z-index: 100;
@@ -251,7 +254,6 @@
 
         <div class="question-text" id="question-text">Loading...</div>
 
-        <!-- The invisible box where buttons start out -->
         <div class="options-container" id="options-container"></div>
 
         <button class="next-btn" id="next-btn" onclick="nextQuestion()">Submit</button>
@@ -296,6 +298,9 @@
         let currentSelection = null;
         let roastTimeout;
         let moveTimeout;
+        
+        // Array to hold current buttons so we can clean them up
+        let activeButtons = [];
 
         function initGame() {
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
@@ -306,32 +311,30 @@
         }
 
         function dodgeButton(btn) {
-            // Generate random coordinates but keep it strictly away from the center box
-            let newX, newY;
-            let isSafe = false;
+            // Generate random coordinates within the window (minus button width/height)
+            const maxX = window.innerWidth - 200;
+            const maxY = window.innerHeight - 100;
+            
+            // Ensure it doesn't just dodge by 1 pixel, make it jump far
+            let newX = Math.floor(Math.random() * maxX);
+            let newY = Math.floor(Math.random() * maxY);
 
-            while (!isSafe) {
-                newX = Math.floor(Math.random() * (window.innerWidth - 250));
-                newY = Math.floor(Math.random() * (window.innerHeight - 100));
+            // Keep it away from the very top and very bottom edges
+            if (newY < 50) newY = 50;
+            if (newY > window.innerHeight - 150) newY = window.innerHeight - 150;
 
-                // Prevent it from spawning directly under the main box
-                if (newX < window.innerWidth / 2 - 350 || newX > window.innerWidth / 2 + 100 || newY < 150 || newY > window.innerHeight - 200) {
-                    isSafe = true;
-                }
-            }
-
+            // Apply position
             btn.style.left = `${newX}px`;
             btn.style.top = `${newY}px`;
         }
 
         function moveRobot() {
             const robot = document.getElementById('robot-container');
-            // Keep it strictly in the corners of the screen
             const corners = [
-                { top: '5%', right: '5%' },
                 { top: '5%', left: '5%' },
-                { top: '80%', right: '5%' },
-                { top: '80%', left: '5%' }
+                { top: '5%', right: '5%' },
+                { top: '80%', left: '5%' },
+                { top: '80%', right: '5%' }
             ];
             
             const randomCorner = corners[Math.floor(Math.random() * corners.length)];
@@ -367,9 +370,9 @@
 
             questionText.innerText = `Question ${currentQuestionIndex + 1}: ${qData.q}`;
             
-            // Clear old buttons
-            optionsContainer.innerHTML = '';
-            document.querySelectorAll('.option-btn').forEach(b => b.remove());
+            // Delete old buttons
+            activeButtons.forEach(b => b.remove());
+            activeButtons = [];
 
             nextBtn.style.display = 'none';
             currentSelection = null;
@@ -379,36 +382,69 @@
 
             const shuffledOpts = qData.opts.sort(() => 0.5 - Math.random());
 
-            shuffledOpts.forEach(opt => {
+            // Get the position of the container to spawn buttons inside it
+            const rect = optionsContainer.getBoundingClientRect();
+
+            shuffledOpts.forEach((opt, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
-                
-                // THE FIX: I put the text back into the button!
                 btn.innerText = opt;
                 
-                // Place button initially inside the main container
-                const rect = optionsContainer.getBoundingClientRect();
-                btn.style.left = `${rect.left + (Math.random() * (rect.width - 200))}px`;
-                btn.style.top = `${rect.top + (Math.random() * 80) + 20}px`;
+                // Spawn them neatly side-by-side inside the box
+                const startX = rect.left + (index * (rect.width / 4)) + 20;
+                const startY = rect.top + 40;
+                
+                btn.style.left = `${startX}px`;
+                btn.style.top = `${startY}px`;
 
-                // THE DODGE: When mouse touches it, jump away instantly
+                // THE DODGE LOGIC
                 btn.addEventListener('mouseenter', () => {
+                    // 85% chance to run away
                     if (Math.random() > 0.15 && !btn.classList.contains('selected')) {
                         dodgeButton(btn);
                     }
                 });
 
+                // WHAT HAPPENS IF THEY CATCH IT
                 btn.onclick = () => {
                     btn.classList.add('selected');
                     currentSelection = opt;
                     document.getElementById('next-btn').style.display = 'inline-block';
                     
+                    // Play a funny "YEET" sound using the Web Audio API!
+                    playYeetSound();
+
                     const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
-                    speak(randomRoast);
+                    speak("You caught it! " + randomRoast);
                 };
                 
                 document.body.appendChild(btn); 
+                activeButtons.push(btn); // Save to array for cleanup
             });
+        }
+
+        // --- SOUND EFFECT CODE ---
+        function playYeetSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(600, audioCtx.currentTime); 
+                oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3); 
+
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            } catch(e) {
+                console.log("Audio not supported");
+            }
         }
 
         function nextQuestion() {
@@ -423,7 +459,7 @@
             document.getElementById('error-screen').style.display = 'block';
             speak("Verdict reached. You are definitely human.");
             clearTimeout(moveTimeout);
-            document.querySelectorAll('.option-btn').forEach(b => b.style.display = 'none');
+            activeButtons.forEach(b => b.style.display = 'none');
         }
 
         initGame();

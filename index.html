@@ -53,7 +53,6 @@
             z-index: 10;
         }
 
-        /* --- THE INTRO POPUP --- */
         #intro-popup {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -113,7 +112,6 @@
             transform: scale(1.1);
         }
 
-        /* --- MAIN GAME UI --- */
         h2 {
             font-family: 'Black Ops One', cursive;
             color: #000;
@@ -194,6 +192,28 @@
             border-color: #ff0055;
             pointer-events: none; 
             box-shadow: 0 0 20px #ff0055;
+        }
+
+        /* Animation for when the button gets hijacked */
+        .hijack-shake {
+            animation: shake 0.5s;
+            background-color: #ff0055 !important;
+            color: #fff !important;
+            border-color: #fff !important;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
         .next-btn {
@@ -416,6 +436,14 @@
             "I am logging this error in the mainframe."
         ];
 
+        // THE NEW MOCKING LINES FOR HIJACKED QUESTIONS
+        const hijackRoasts = [
+            "You don't even know that?! How shameful.",
+            "We had to change the answer for you. How disappointing.",
+            "Incorrect. I fixed it for you. You're welcome.",
+            "Your organic brain failed. I selected the correct option."
+        ];
+
         let currentQuestionPool = [];
         let currentQuestionIndex = 0;
         let currentSelection = null;
@@ -424,8 +452,6 @@
         let activeButtons = [];
         let score = 0;
         let robotVoice = null;
-        
-        // NEW: Array to hold which questions will be hijacked
         let hijackQuestions = []; 
 
         function setupVoice() {
@@ -446,9 +472,6 @@
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
             currentQuestionPool = shuffled.slice(0, 5);
             
-            // --- THE HIJACK SETUP ---
-            // Create an array of [0,1,2,3,4] and shuffle it. 
-            // Then pick the first 2. These will be the questions that hijack.
             let indices = [0, 1, 2, 3, 4];
             indices.sort(() => 0.5 - Math.random());
             hijackQuestions = [indices[0], indices[1]]; 
@@ -565,7 +588,6 @@
             const shuffledOpts = qData.opts.sort(() => 0.5 - Math.random());
             const rect = optionsContainer.getBoundingClientRect();
 
-            // Check if the CURRENT question is one of the 2 hijack questions
             const isHijackQuestion = hijackQuestions.includes(currentQuestionIndex);
 
             shuffledOpts.forEach((opt, index) => {
@@ -586,40 +608,43 @@
                 });
 
                 btn.onclick = () => {
-                    // Stop other buttons from being clicked while processing
                     activeButtons.forEach(b => b.style.pointerEvents = 'none');
 
                     let targetBtn = btn;
                     
-                    // IF THIS IS A HIJACK QUESTION
                     if (isHijackQuestion) {
-                        // Find a different button to select
                         const otherButtons = activeButtons.filter(b => b !== btn);
                         if (otherButtons.length > 0) {
                             targetBtn = otherButtons[Math.floor(Math.random() * otherButtons.length)];
                             
-                            // Visual feedback: Flash the button they ACTUALLY clicked
-                            btn.style.border = "4px solid #fff"; 
-                            btn.style.backgroundColor = "#ff0055";
+                            // Visual effect: The button they clicked flashes red and shakes
+                            btn.classList.add('hijack-shake');
                             
-                            // Mock them
-                            speak("Incorrect input. Auto-correcting to the logical answer.", true);
+                            // Pick a random mocking line from our new array
+                            const hijackInsult = hijackRoasts[Math.floor(Math.random() * hijackRoasts.length)];
+                            speak(hijackInsult, true);
+                            
+                            // Wait for the shake animation to finish, then select the new answer
+                            setTimeout(() => {
+                                btn.classList.remove('hijack-shake');
+                                targetBtn.classList.add('selected');
+                                currentSelection = targetBtn.innerText;
+                                document.getElementById('next-btn').style.display = 'inline-block';
+                            }, 800); // 800ms delay to let the mockery sink in
+                            
+                        } else {
+                            // Fallback just in case
+                            btn.classList.add('selected');
+                            currentSelection = opt;
+                            document.getElementById('next-btn').style.display = 'inline-block';
                         }
                     } else {
-                        // Normal behavior (no hijack)
+                        // Normal question
+                        btn.classList.add('selected');
+                        currentSelection = opt;
+                        document.getElementById('next-btn').style.display = 'inline-block';
                         speak("You caught it! " + roasts[Math.floor(Math.random() * roasts.length)], true);
                     }
-
-                    // Select the target (either the one they clicked, or the hijacked one)
-                    // We add a slight delay so they can see the hijack happen
-                    setTimeout(() => {
-                        // Reset the visual of the clicked button just in case
-                        btn.style.border = "2px solid #00ffcc"; 
-                        
-                        targetBtn.classList.add('selected');
-                        currentSelection = targetBtn.innerText;
-                        document.getElementById('next-btn').style.display = 'inline-block';
-                    }, isHijackQuestion ? 600 : 0); // 600ms delay if hijacked so they see it
                     
                     if(Math.random() > 0.5) { score += 10; } else { score -= 5; }
                     document.getElementById('score-display').innerText = `HUMANITY SCORE: ${score}`;

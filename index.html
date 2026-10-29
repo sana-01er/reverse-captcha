@@ -7,13 +7,16 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bungee&family=Permanent+Marker&display=swap');
 
+        @keyframes chaos-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         body {
-            /* Deep purple background with black grid */
-            background-color: #2b0f3a;
-            background-image: 
-                linear-gradient(#000 2px, transparent 2px),
-                linear-gradient(90deg, #000 2px, transparent 2px);
-            background-size: 40px 40px;
+            background: linear-gradient(-45deg, #000000, #2b0f3a, #ff0000, #e6ff00);
+            background-size: 400% 400%;
+            animation: chaos-bg 12s ease infinite;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -26,13 +29,12 @@
         }
 
         .container {
-            background-color: #111;
-            border: 6px solid #ff0000; /* Blood red border */
-            border-radius: 0;
+            background-color: rgba(17, 17, 17, 0.95);
+            border: 6px solid #ff0000;
             padding: 30px;
             width: 80%;
             max-width: 650px;
-            box-shadow: 12px 12px 0px #e6ff00; /* Neon yellow drop shadow */
+            box-shadow: 12px 12px 0px #e6ff00;
             text-align: center;
             position: relative;
             z-index: 10;
@@ -48,7 +50,7 @@
             margin-top: -55px;
             margin-bottom: 20px;
             font-size: 2em;
-            box-shadow: 5px 5px 0px #000;
+            box-shadow: 5px 5px 0px #2b0f3a;
             text-transform: uppercase;
         }
 
@@ -65,19 +67,21 @@
             margin: 25px 0;
             min-height: 60px;
             color: #fff;
-            background-color: #2b0f3a; /* Purple inner box */
+            background-color: #2b0f3a;
             padding: 15px;
             border: 3px dashed #e6ff00;
         }
 
+        /* The Arena for the running buttons */
         .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
+            position: relative;
+            height: 200px; /* Needs a fixed height so buttons don't overlap text */
+            margin-bottom: 20px;
+            border: 2px dashed #333; /* Optional: Shows the area they can run around in */
         }
 
         .option-btn {
+            position: absolute;
             background-color: #111;
             color: #fff;
             border: 3px solid #e6ff00;
@@ -86,23 +90,21 @@
             font-size: 1em;
             font-family: inherit;
             font-weight: bold;
-            transition: all 0.1s;
             box-shadow: 4px 4px 0px #ff0000;
+            /* Smoothly slide to new random positions */
+            transition: left 0.2s ease-out, top 0.2s ease-out, background-color 0.2s;
         }
 
         .option-btn:hover {
             background-color: #ff0000;
-            color: #fff;
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0px #e6ff00;
         }
 
         .option-btn.selected {
             background-color: #e6ff00;
             color: #000;
             border-color: #ff0000;
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px #000;
+            /* Stop it from running away once clicked */
+            pointer-events: none; 
         }
 
         .next-btn {
@@ -141,7 +143,7 @@
             transition: width 0.3s ease;
         }
 
-        /* The Error Screen */
+        /* Error Screen */
         #error-screen {
             display: none;
             color: #fff;
@@ -168,14 +170,13 @@
             100% { transform: translate(0) }
         }
 
-        /* The Annoying Roaming Robot */
+        /* The Cyber-Eye Robot */
         #robot-container {
             position: absolute;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             z-index: 100;
-            transition: all 1.5s ease-in-out; /* Smoothly moves around */
-            /* Start position */
+            transition: all 2s ease-in-out; 
             top: 10%;
             left: 10%;
         }
@@ -198,42 +199,45 @@
             content: '';
             position: absolute;
             right: -15px;
-            bottom: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             border-width: 10px 0 10px 15px;
             border-style: solid;
             border-color: transparent transparent transparent #ff0000;
         }
 
         #robot-svg {
-            width: 90px;
-            height: 90px;
+            width: 100px;
+            height: 100px;
             filter: drop-shadow(5px 5px 0px #ff0000);
+            animation: hover 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes hover {
+            0% { transform: translateY(0) rotate(-5deg); }
+            100% { transform: translateY(-15px) rotate(5deg); }
         }
     </style>
 </head>
 <body>
 
-    <!-- The Annoying Roaming Robot -->
     <div id="robot-container">
         <div id="robot-speech">Initializing...</div>
-        
-        <!-- SVG Cool Skeleton -->
         <svg id="robot-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 20 40 Q 50 10 80 40 L 85 45 L 15 45 Z" fill="#000" stroke="#e6ff00" stroke-width="3"/>
-            <rect x="10" y="42" width="80" height="8" fill="#e6ff00" rx="2"/>
-            <path d="M 25 50 Q 50 40 75 50 L 75 75 Q 50 95 25 75 Z" fill="#fff" stroke="#000" stroke-width="4"/>
-            <path d="M 25 55 L 75 55 L 70 65 L 55 65 L 50 60 L 45 65 L 30 65 Z" fill="#000"/>
-            <path d="M 35 80 Q 50 90 65 80" fill="none" stroke="#000" stroke-width="4"/>
-            <line x1="40" y1="82" x2="40" y2="86" stroke="#000" stroke-width="2"/>
-            <line x1="50" y1="85" x2="50" y2="89" stroke="#000" stroke-width="2"/>
-            <line x1="60" y1="82" x2="60" y2="86" stroke="#000" stroke-width="2"/>
+            <polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="#111" stroke="#e6ff00" stroke-width="4"/>
+            <line x1="50" y1="5" x2="50" y2="25" stroke="#ff0000" stroke-width="2"/>
+            <line x1="95" y1="75" x2="75" y2="65" stroke="#ff0000" stroke-width="2"/>
+            <line x1="5" y1="75" x2="25" y2="65" stroke="#ff0000" stroke-width="2"/>
+            <circle cx="50" cy="50" r="25" fill="#2b0f3a" stroke="#e6ff00" stroke-width="3"/>
+            <circle cx="50" cy="50" r="15" fill="#ff0000"/>
+            <circle cx="50" cy="50" r="5" fill="#fff"/>
+            <rect x="20" y="50" width="10" height="3" fill="#e6ff00"/>
+            <rect x="70" y="40" width="15" height="2" fill="#ff0000"/>
         </svg>
     </div>
 
-    <!-- Main App -->
     <div class="container" id="main-container">
         <h2>Human Verification Protocol</h2>
-        
         <p class="judge-text">"System detects organic matter. Prove you are a machine."</p>
 
         <div class="progress-bar">
@@ -242,12 +246,12 @@
 
         <div class="question-text" id="question-text">Loading...</div>
 
+        <!-- The container where buttons run around -->
         <div class="options-grid" id="options-grid"></div>
 
         <button class="next-btn" id="next-btn" onclick="nextQuestion()">Submit</button>
     </div>
 
-    <!-- The Verdict Screen -->
     <div class="container" id="error-screen">
         <div class="error-title glitch">HUMAN DETECTED</div>
         <p style="font-weight:bold; font-size:1.2em; color: #e6ff00;">Verdict: Guilty of having a pulse.</p>
@@ -257,7 +261,6 @@
     </div>
 
     <script>
-        // 30 UNIQUE QUESTIONS
         const allQuestions = [
             { q: "Calculate the square root of a banana.", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
             { q: "What is the hexadecimal color of the concept of love?", opts: ["#FF0000", "#LOVE99", "Error: Emotion not found", "#000000"] },
@@ -312,23 +315,37 @@
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
             currentQuestionPool = shuffled.slice(0, 5);
             speak("Welcome. Let the trial begin.");
-            moveRobot(); // Start the annoying movement
+            moveRobot(); 
             loadQuestion();
         }
 
-        // Function to make the robot teleport around the screen
+        // Function to make the options jump to random spots
+        function dodgeButton(btn) {
+            const arena = document.getElementById('options-grid');
+            const arenaWidth = arena.clientWidth;
+            const arenaHeight = arena.clientHeight;
+            
+            // Max positions so button stays inside the box
+            const maxX = arenaWidth - btn.clientWidth - 10;
+            const maxY = arenaHeight - btn.clientHeight - 10;
+
+            // Generate random coordinates
+            const newX = Math.max(0, Math.random() * maxX);
+            const newY = Math.max(0, Math.random() * maxY);
+
+            btn.style.left = `${newX}px`;
+            btn.style.top = `${newY}px`;
+        }
+
         function moveRobot() {
             const robot = document.getElementById('robot-container');
-            
-            // Generate random positions (keeping it somewhat visible)
-            const randomTop = Math.floor(Math.random() * 80) + 5; // 5% to 85%
-            const randomLeft = Math.floor(Math.random() * 80) + 5; // 5% to 85%
+            const randomTop = Math.floor(Math.random() * 80) + 5; 
+            const randomLeft = Math.floor(Math.random() * 80) + 5; 
             
             robot.style.top = `${randomTop}%`;
             robot.style.left = `${randomLeft}%`;
 
-            // Randomly move every 2.5 to 5 seconds
-            const nextMove = Math.random() * 2500 + 2500;
+            const nextMove = Math.random() * 3000 + 2000;
             moveTimeout = setTimeout(moveRobot, nextMove);
         }
 
@@ -368,12 +385,18 @@
                 btn.className = 'option-btn';
                 btn.innerText = opt;
                 
-                btn.onmouseover = () => {
-                    if (Math.random() > 0.6) { 
-                        btn.innerText = "Not this one!";
-                    }
-                };
+                // We wait a tiny bit for the button to render, then place it randomly
+                setTimeout(() => dodgeButton(btn), 10);
 
+                // THE DODGE LOGIC: On mouse enter, it jumps to a new random spot
+                btn.addEventListener('mouseenter', () => {
+                    // 80% chance to dodge, 20% chance to let them click so it's not impossible
+                    if (Math.random() > 0.2 && !btn.classList.contains('selected')) {
+                        dodgeButton(btn);
+                    }
+                });
+
+                // If they manage to click it, freeze it in place
                 btn.onclick = () => {
                     document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
@@ -398,7 +421,6 @@
             document.getElementById('main-container').style.display = 'none';
             document.getElementById('error-screen').style.display = 'block';
             speak("Verdict reached. You are definitely human.");
-            // Stop the robot from moving at the end
             clearTimeout(moveTimeout);
         }
 

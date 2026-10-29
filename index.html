@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bot Check - No Cap</title>
+    <title>System Authentication</title>
     <style>
-        /* Base styling */
+        /* --- RAVE CONCERT BACKGROUND & ANIMATIONS --- */
         body {
-            background-color: #050505;
-            color: #0f0;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+            background-size: 400% 400%;
+            animation: raveBackground 3s ease infinite;
+            color: #fff;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
@@ -19,44 +21,60 @@
             cursor: crosshair;
         }
 
-        /* The hacker grid background */
+        @keyframes raveBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* The flashing strobe grid */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.7) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.7) 1px, transparent 1px);
+            background-size: 40px 40px;
             z-index: -1;
+            animation: strobe 0.1s infinite alternate;
         }
 
+        @keyframes strobe {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+
+        /* The main box */
         .container {
-            background-color: rgba(10, 15, 10, 0.95);
-            border: 2px solid #0f0;
-            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 4px solid #0f0;
+            border-radius: 15px;
             padding: 40px;
             width: 80%;
             max-width: 600px;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 50px #0f0, inset 0 0 20px #0f0;
             text-align: center;
             position: relative;
+            z-index: 10;
         }
 
         h2 {
-            color: #0f0;
+            color: #ffff00;
             margin-top: 0;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 1px dashed #0f0;
+            letter-spacing: 3px;
+            border-bottom: 2px dashed #ffff00;
             padding-bottom: 10px;
+            text-shadow: 0 0 10px #ffff00;
         }
 
         .question-text {
-            font-size: 1.2em;
+            font-size: 1.3em;
             margin: 30px 0;
             min-height: 60px;
             color: #fff;
-            text-shadow: 0 0 5px #0f0;
+            text-shadow: 0 0 10px #0f0;
         }
 
         .options-grid {
@@ -67,47 +85,50 @@
         }
 
         .option-btn {
-            background-color: transparent;
+            background-color: rgba(0, 255, 0, 0.1);
             color: #0f0;
-            border: 1px solid #0f0;
+            border: 2px solid #0f0;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 1em;
-            transition: all 0.1s;
+            transition: all 0.05s; /* FASTER TRANSITION */
             font-family: inherit;
+            font-weight: bold;
             position: relative; 
         }
 
         .option-btn:hover {
-            background-color: rgba(0, 255, 0, 0.2);
-            box-shadow: 0 0 10px #0f0;
+            background-color: #0f0;
+            color: #000;
+            box-shadow: 0 0 20px #0f0;
         }
 
         .option-btn.selected {
-            background-color: #0f0;
-            color: #000;
-            font-weight: bold;
-            box-shadow: 0 0 15px #0f0;
+            background-color: #ff00ff;
+            border-color: #ff00ff;
+            color: #fff;
+            box-shadow: 0 0 20px #ff00ff;
         }
 
         .next-btn {
-            background-color: #0f0;
+            background-color: #ffff00;
             color: #000;
             border: none;
-            padding: 12px 30px;
-            font-size: 1.1em;
-            border-radius: 5px;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 8px;
             cursor: pointer;
             font-family: inherit;
             font-weight: bold;
             display: none;
             text-transform: uppercase;
+            box-shadow: 0 0 15px #ffff00;
         }
 
         .next-btn:hover {
             background-color: #fff;
-            box-shadow: 0 0 20px #fff;
+            box-shadow: 0 0 25px #fff;
         }
 
         /* Shake Animation */
@@ -125,9 +146,10 @@
         #terminal-screen {
             text-align: left;
             font-size: 1.2em;
-            line-height: 1.6;
-            color: #0f0;
-            height: 200px;
+            line-height: 1.8;
+            color: #00ffff;
+            height: 220px;
+            text-shadow: 0 0 5px #00ffff;
         }
 
         /* Glitch Error Screen */
@@ -137,11 +159,12 @@
         
         .glitch-text {
             color: #ff0000;
-            font-size: 2.5em;
+            font-size: 2.8em;
             font-weight: bold;
             text-transform: uppercase;
             position: relative;
             margin-bottom: 20px;
+            text-shadow: 0 0 20px #ff0000;
         }
 
         .glitch-text::before, .glitch-text::after {
@@ -151,17 +174,17 @@
         }
         
         .glitch-text::before {
-            left: 2px;
-            text-shadow: -2px 0 #00ffff;
+            left: 3px;
+            text-shadow: -3px 0 #00ffff;
             clip: rect(24px, 550px, 90px, 0);
-            animation: glitch-anim 3s infinite linear alternate-reverse;
+            animation: glitch-anim 2s infinite linear alternate-reverse;
         }
 
         .glitch-text::after {
-            left: -2px;
-            text-shadow: -2px 0 #ff00ff;
+            left: -3px;
+            text-shadow: -3px 0 #ffff00;
             clip: rect(85px, 550px, 140px, 0);
-            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+            animation: glitch-anim 1.5s infinite linear alternate-reverse;
         }
 
         @keyframes glitch-anim {
@@ -176,11 +199,11 @@
         /* Fake Success Screen */
         #success-screen {
             display: none;
-            color: #0f0;
-            text-shadow: 0 0 20px #0f0;
+            color: #00ff00;
+            text-shadow: 0 0 30px #00ff00;
         }
         #success-screen h1 {
-            font-size: 3em;
+            font-size: 4em;
             margin-bottom: 10px;
         }
     </style>
@@ -211,9 +234,9 @@
 
     <!-- 4. The Final Error Screen -->
     <div class="container" id="error-screen">
-        <div class="glitch-text" data-text="CAUGHT IN 4K">CAUGHT IN 4K</div>
-        <p style="color: #0f0; font-size: 1.2em;">Bro really thought they cooked. 💀</p>
-        <p style="color: #0f0; font-size: 1.1em;">Your aura is in the negatives. That was mid at best. Human detected. Take the L and go touch grass.</p>
+        <div class="glitch-text" id="random-insult" data-text="CAUGHT IN 4K">CAUGHT IN 4K</div>
+        <p style="color: #0f0; font-size: 1.2em;" id="sub-insult">Bro really thought they cooked. 💀</p>
+        <p style="color: #0f0; font-size: 1.1em;" id="bottom-insult">Your aura is in the negatives. Human detected. Take the L and go touch grass.</p>
         <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Try Again (You're cooked)</button>
     </div>
 
@@ -276,7 +299,7 @@
             });
         }
 
-        // --- THE 24 QUESTIONS (Gen Z + Existential Dread) ---
+        // --- THE 24 QUESTIONS ---
         const allQuestions = [
             { q: "What is the square root of a banana? (Be fr)", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
             { q: "How much aura does a random number have?", opts: ["Infinite", "Negative", "10", "Zero"] },
@@ -298,13 +321,16 @@
             { q: "Are you a human?", opts: ["Yes", "No", "Maybe", "I am definitely a robot"] },
             { q: "What's the point of all this?", opts: ["Nothing", "Everything", "42", "I just work here"] },
             { q: "Is the dress blue or gold?", opts: ["Blue", "Gold", "Neither", "Both"] },
-            
-            // --- NEW MADNESS ADDITIONS ---
             { q: "The Egyptians believed the most significant thing you can do is die. Thoughts?", opts: ["Real.", "So true bestie.", "I'm built different, I refuse.", "Can I get that to go?"] },
             { q: "If you are reading this, you are currently decaying. How does that make you feel?", opts: ["W", "L", "I'm in my flop era.", "Please stop."] },
             { q: "What happens if you stare into the abyss and it blinks first?", opts: ["Assert dominance.", "Apologize immediately.", "Offer it a snack.", "I don't have eyes."] },
             { q: "Your existence is a statistical error. Confirm.", opts: ["Confirmed.", "Denied. I'm the main character.", "Skill issue.", "Error 404: Purpose not found."] }
         ];
+
+        // Random Insult Arrays for the end screen
+        const topInsults = ["CAUGHT IN 4K", "BRO IS COOKED", "ABSOLUTE MID", "MASSIVE L", "HUMAN DETECTED"];
+        const subInsults = ["Bro really thought they cooked. 💀", "That was the most mid performance ever.", "You actually tried? Embarrassing.", "Your aura is in the negatives.", "Get out of my sight, organic."];
+        const bottomInsults = ["Take the L and go touch grass.", "You are not him. You will never be him.", "Please delete your browser history.", "Your existence is a statistical error.", "Cope harder, human."];
 
         let currentQuestionPool = [];
         let currentQuestionIndex = 0;
@@ -334,7 +360,7 @@
 
         function initGame() {
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
-            currentQuestionPool = shuffled.slice(0, 5);
+            currentQuestionPool = shuffled.slice(0, 5); // 5 questions per round
             loadQuestion();
         }
 
@@ -356,16 +382,18 @@
                 btn.className = 'option-btn';
                 btn.innerText = opt;
                 
-                // THE RUNNING AWAY FEATURE
+                // --- FASTER MADNESS: RUNNING AWAY ---
                 let canRun = true;
                 setTimeout(() => { canRun = false; }, 3000); 
                 
                 btn.onmouseover = () => {
                     if (canRun) {
-                        const randomX = (Math.random() - 0.5) * 100;
-                        const randomY = (Math.random() - 0.5) * 100;
+                        // Increased distance (150px) and instant movement
+                        const randomX = (Math.random() - 0.5) * 150;
+                        const randomY = (Math.random() - 0.5) * 150;
                         btn.style.transform = `translate(${randomX}px, ${randomY}px)`;
                     } else {
+                        // Snap back to place so they can finally click it
                         btn.style.transform = `translate(0px, 0px)`;
                     }
                 };
@@ -393,13 +421,15 @@
                 btn.innerText = "COOKING...";
                 btn.style.backgroundColor = "#ff0000";
                 btn.style.color = "#fff";
+                btn.style.boxShadow = "0 0 20px #ff0000";
                 btn.disabled = true;
 
                 setTimeout(() => {
                     currentQuestionIndex++;
                     btn.innerText = "Lock It In";
-                    btn.style.backgroundColor = "#0f0";
+                    btn.style.backgroundColor = "#ffff00";
                     btn.style.color = "#000";
+                    btn.style.boxShadow = "0 0 15px #ffff00";
                     btn.disabled = false;
                     loadQuestion();
                 }, 1500);
@@ -413,6 +443,19 @@
 
             setTimeout(() => {
                 document.getElementById('success-screen').style.display = 'none';
+                
+                // --- RANDOMIZE THE INSULTS ---
+                const top = topInsults[Math.floor(Math.random() * topInsults.length)];
+                const sub = subInsults[Math.floor(Math.random() * subInsults.length)];
+                const bot = bottomInsults[Math.floor(Math.random() * bottomInsults.length)];
+                
+                const glitchElement = document.getElementById('random-insult');
+                glitchElement.innerText = top;
+                glitchElement.setAttribute('data-text', top); // Required for CSS glitch effect
+                
+                document.getElementById('sub-insult').innerText = sub;
+                document.getElementById('bottom-insult').innerText = bot;
+
                 document.getElementById('error-screen').style.display = 'block';
                 playErrorSound();
             }, 2500);

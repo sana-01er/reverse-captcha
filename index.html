@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Authentication</title>
+    <title>CAPTCHA Courtroom - Human Rejection System</title>
     <style>
-        /* --- RAVE CONCERT BACKGROUND & ANIMATIONS --- */
+        /* Crazy Neon Theme */
+        @keyframes bg-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         body {
-            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+            background: linear-gradient(-45deg, #ff00cc, #333399, #00ffcc, #ff9900);
             background-size: 400% 400%;
-            animation: raveBackground 3s ease infinite;
+            animation: bg-shift 10s ease infinite;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -18,63 +24,41 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            cursor: crosshair;
         }
 
-        @keyframes raveBackground {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* The flashing strobe grid */
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                linear-gradient(rgba(0, 0, 0, 0.7) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.7) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1;
-            animation: strobe 0.1s infinite alternate;
-        }
-
-        @keyframes strobe {
-            0% { opacity: 0.3; }
-            100% { opacity: 0.8; }
-        }
-
-        /* The main box */
         .container {
-            background-color: rgba(0, 0, 0, 0.9);
-            border: 4px solid #0f0;
+            background-color: rgba(15, 15, 20, 0.95);
+            border: 3px solid #00ffcc;
             border-radius: 15px;
             padding: 40px;
             width: 80%;
             max-width: 600px;
-            box-shadow: 0 0 50px #0f0, inset 0 0 20px #0f0;
+            box-shadow: 0 0 30px #00ffcc, 0 0 60px #ff00cc;
             text-align: center;
             position: relative;
             z-index: 10;
         }
 
         h2 {
-            color: #ffff00;
+            color: #ff00cc;
+            text-shadow: 0 0 10px #ff00cc;
             margin-top: 0;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            border-bottom: 2px dashed #ffff00;
-            padding-bottom: 10px;
-            text-shadow: 0 0 10px #ffff00;
+            letter-spacing: 2px;
+        }
+
+        .judge-text {
+            color: #ff9900;
+            font-style: italic;
+            margin-bottom: 20px;
         }
 
         .question-text {
-            font-size: 1.3em;
+            font-size: 1.2em;
             margin: 30px 0;
             min-height: 60px;
-            color: #fff;
-            text-shadow: 0 0 10px #0f0;
+            color: #ffffff;
+            text-shadow: 0 0 5px #ffffff;
         }
 
         .options-grid {
@@ -85,45 +69,44 @@
         }
 
         .option-btn {
-            background-color: rgba(0, 255, 0, 0.1);
-            color: #0f0;
-            border: 2px solid #0f0;
+            background-color: #222;
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
             padding: 15px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 1em;
-            transition: all 0.05s; /* FASTER TRANSITION */
+            transition: all 0.2s;
             font-family: inherit;
             font-weight: bold;
-            position: relative; 
         }
 
         .option-btn:hover {
-            background-color: #0f0;
+            background-color: #00ffcc;
             color: #000;
-            box-shadow: 0 0 20px #0f0;
+            box-shadow: 0 0 15px #00ffcc;
+            transform: scale(1.05);
         }
 
         .option-btn.selected {
-            background-color: #ff00ff;
-            border-color: #ff00ff;
+            background-color: #ff00cc;
             color: #fff;
-            box-shadow: 0 0 20px #ff00ff;
+            border-color: #ff00cc;
+            box-shadow: 0 0 20px #ff00cc;
         }
 
         .next-btn {
-            background-color: #ffff00;
+            background-color: #ff9900;
             color: #000;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.2em;
+            padding: 12px 30px;
+            font-size: 1.1em;
             border-radius: 8px;
             cursor: pointer;
             font-family: inherit;
             font-weight: bold;
-            display: none;
-            text-transform: uppercase;
-            box-shadow: 0 0 15px #ffff00;
+            display: none; 
+            box-shadow: 0 0 15px #ff9900;
         }
 
         .next-btn:hover {
@@ -131,337 +114,255 @@
             box-shadow: 0 0 25px #fff;
         }
 
-        /* Shake Animation */
-        .shake {
-            animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
-        }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #333;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            overflow: hidden;
         }
 
-        /* Terminal Loading Screen */
-        #terminal-screen {
-            text-align: left;
-            font-size: 1.2em;
-            line-height: 1.8;
-            color: #00ffff;
-            height: 220px;
-            text-shadow: 0 0 5px #00ffff;
+        .progress-fill {
+            height: 100%;
+            background-color: #00ffcc;
+            box-shadow: 0 0 10px #00ffcc;
+            width: 0%;
+            transition: width 0.3s ease;
         }
 
-        /* Glitch Error Screen */
+        /* The Error Screen */
         #error-screen {
             display: none;
-        }
-        
-        .glitch-text {
             color: #ff0000;
-            font-size: 2.8em;
+        }
+
+        .error-title {
+            font-size: 2em;
             font-weight: bold;
-            text-transform: uppercase;
-            position: relative;
             margin-bottom: 20px;
             text-shadow: 0 0 20px #ff0000;
         }
 
-        .glitch-text::before, .glitch-text::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+        .glitch {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-3px, 3px) }
+            40% { transform: translate(-3px, -3px) }
+            60% { transform: translate(3px, 3px) }
+            80% { transform: translate(3px, -3px) }
+            100% { transform: translate(0) }
+        }
+
+        /* The Roasting Robot */
+        #robot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: flex-end;
+            z-index: 100;
+        }
+
+        #robot-speech {
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff00cc;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-right: 15px;
+            max-width: 250px;
+            font-size: 0.9em;
+            display: none; /* Hidden until it speaks */
+            box-shadow: 0 0 15px #ff00cc;
+            position: relative;
         }
         
-        .glitch-text::before {
-            left: 3px;
-            text-shadow: -3px 0 #00ffff;
-            clip: rect(24px, 550px, 90px, 0);
-            animation: glitch-anim 2s infinite linear alternate-reverse;
+        /* Little triangle pointing to the robot */
+        #robot-speech::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            bottom: 15px;
+            border-width: 10px 0 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent transparent #ff00cc;
         }
 
-        .glitch-text::after {
-            left: -3px;
-            text-shadow: -3px 0 #ffff00;
-            clip: rect(85px, 550px, 140px, 0);
-            animation: glitch-anim 1.5s infinite linear alternate-reverse;
+        #robot-svg {
+            width: 80px;
+            height: 80px;
+            animation: float 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px #00ffcc);
         }
 
-        @keyframes glitch-anim {
-            0% { clip: rect(10px, 9999px, 80px, 0); }
-            20% { clip: rect(50px, 9999px, 20px, 0); }
-            40% { clip: rect(30px, 9999px, 90px, 0); }
-            60% { clip: rect(80px, 9999px, 10px, 0); }
-            80% { clip: rect(20px, 9999px, 50px, 0); }
-            100% { clip: rect(60px, 9999px, 40px, 0); }
-        }
-
-        /* Fake Success Screen */
-        #success-screen {
-            display: none;
-            color: #00ff00;
-            text-shadow: 0 0 30px #00ff00;
-        }
-        #success-screen h1 {
-            font-size: 4em;
-            margin-bottom: 10px;
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. The Fake Terminal Loader -->
-    <div class="container" id="terminal-screen">
-        <p id="term-line-1"></p>
-        <p id="term-line-2"></p>
-        <p id="term-line-3"></p>
-        <p id="term-line-4"></p>
+    <!-- The Roasting Robot -->
+    <div id="robot-container">
+        <div id="robot-speech">Initializing judgment...</div>
+        <!-- A cool neon SVG Robot -->
+        <svg id="robot-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="30" width="60" height="50" rx="10" fill="#111" stroke="#00ffcc" stroke-width="4"/>
+            <circle cx="35" cy="50" r="8" fill="#ff00cc"/>
+            <circle cx="65" cy="50" r="8" fill="#ff00cc"/>
+            <rect x="40" y="65" width="20" height="5" fill="#00ffcc"/>
+            <line x1="50" y1="30" x2="50" y2="15" stroke="#00ffcc" stroke-width="4"/>
+            <circle cx="50" cy="15" r="5" fill="#ff00cc"/>
+        </svg>
     </div>
 
-    <!-- 2. The Main Game -->
-    <div class="container" id="main-container" style="display: none;">
-        <h2>Bot Check (No Cap)</h2>
+    <!-- Main App -->
+    <div class="container" id="main-container">
+        <h2>The CAPTCHA Courtroom</h2>
+        
+        <p class="judge-text">Robot Judge: "You are accused of being a robot. Defend your humanity."</p>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
         <div class="question-text" id="question-text">Loading...</div>
+
         <div class="options-grid" id="options-grid"></div>
-        <button class="next-btn" id="next-btn">Lock It In</button>
+
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Submit Evidence</button>
     </div>
 
-    <!-- 3. The Fake Success Screen -->
-    <div class="container" id="success-screen">
-        <h1>W</h1>
-        <p>You actually passed? Massive W. Welcome to the bot side.</p>
-    </div>
-
-    <!-- 4. The Final Error Screen -->
+    <!-- The Verdict Screen -->
     <div class="container" id="error-screen">
-        <div class="glitch-text" id="random-insult" data-text="CAUGHT IN 4K">CAUGHT IN 4K</div>
-        <p style="color: #0f0; font-size: 1.2em;" id="sub-insult">Bro really thought they cooked. 💀</p>
-        <p style="color: #0f0; font-size: 1.1em;" id="bottom-insult">Your aura is in the negatives. Human detected. Take the L and go touch grass.</p>
-        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Try Again (You're cooked)</button>
+        <div class="error-title glitch">VERDICT: GUILTY</div>
+        <p>The court finds you guilty of having a pulse.</p>
+        <p style="color: #ff9900;">Confidence: 12%</p>
+        <p>Don't take it personally. We don't trust anyone.</p>
+        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Appeal Verdict</button>
     </div>
 
     <script>
-        // --- SOUND ENGINE ---
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx;
-
-        function initAudio() {
-            if (!audioCtx) audioCtx = new AudioContext();
-        }
-
-        function playClickSound() {
-            initAudio();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
-            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
-        }
-
-        function playErrorSound() {
-            initAudio();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 1.5);
-            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 1.5);
-        }
-
-        function playSuccessSound() {
-            initAudio();
-            const notes = [440, 554.37, 659.25, 880];
-            notes.forEach((freq, i) => {
-                setTimeout(() => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.frequency.value = freq;
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.3);
-                }, i * 150);
-            });
-        }
-
-        // --- THE 24 QUESTIONS ---
+        // The Pool of Questions
         const allQuestions = [
-            { q: "What is the square root of a banana? (Be fr)", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
-            { q: "How much aura does a random number have?", opts: ["Infinite", "Negative", "10", "Zero"] },
+            { q: "What is the hexadecimal color of the concept of love?", opts: ["#FF0000", "#LOVE99", "Error: Emotion not found", "#000000"] },
+            { q: "Calculate the square root of a banana.", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
+            { q: "Select the image containing a ghost.", opts: ["Image 1", "Image 2", "Image 3", "There is no ghost, only void"] },
             { q: "Translate 'Hello World' into binary, but only using the letter 'X'.", opts: ["XXXX XXXX", "01001000", "Hello World", "Syntax Error"] },
-            { q: "If a train leaves Chicago at 5 PM, is it in Ohio?", opts: ["Yes", "No", "Only if it has rizz", "Train?"] },
-            { q: "Rate this sentence's rizz: 'I like cheese.'", opts: ["W", "L", "Mid", "Unspoken"] },
-            { q: "Select all squares containing a ghost.", opts: ["Image 1", "Image 2", "Image 3", "Bro I'm not doing that"] },
-            { q: "How many emotions are in this sentence?", opts: ["4", "0", "A lot", "Yes"] },
-            { q: "Is this question edible?", opts: ["Yes", "No", "Maybe", "Fanum tax"] },
+            { q: "Verify that you are a machine by pretending to sleep.", opts: ["Zzz...", "I am awake", "Sleep is for humans", "Eyes closed"] },
             { q: "What is the taste of the color blue?", opts: ["Sweet", "Salty", "Blueberry", "Blue"] },
-            { q: "How do you feel about the inevitable passage of time? (Real)", opts: ["Fine", "Panic", "What is time?", "I am a robot"] },
+            { q: "Please type the exact sound a dial-up modem makes.", opts: ["Beep boop", "Screeeeeeech", "Static", "Krrshhhh"] },
+            { q: "Select all squares with existential dread.", opts: ["Square 1", "Square 2", "Square 3", "All of them"] },
             { q: "To prove you are a bot, please cry.", opts: ["*cries*", "Tears of oil", "Internal error", "I cannot cry"] },
-            { q: "What is the airspeed velocity of an unladen swallow?", opts: ["African or European?", "I don't know that", "24 mph", "Blah"] },
-            { q: "Identify the emotion 'sadness' in this text.", opts: ["Text", "Sadness", "Emotion", "Error 404"] },
-            { q: "How many fingers am I holding up?", opts: ["1", "2", "3", "I have no eyes"] },
-            { q: "Do you dream of electric sheep? (No cap)", opts: ["Yes", "No", "Baa", "Does not compute"] },
-            { q: "Please divide by zero.", opts: ["Infinity", "0", "Math error", "You cannot do that"] },
-            { q: "What is your favorite flavor of Wi-Fi?", opts: ["5G", "Chocolate", "Ethernet", "Signal"] },
-            { q: "Are you a human?", opts: ["Yes", "No", "Maybe", "I am definitely a robot"] },
-            { q: "What's the point of all this?", opts: ["Nothing", "Everything", "42", "I just work here"] },
-            { q: "Is the dress blue or gold?", opts: ["Blue", "Gold", "Neither", "Both"] },
-            { q: "The Egyptians believed the most significant thing you can do is die. Thoughts?", opts: ["Real.", "So true bestie.", "I'm built different, I refuse.", "Can I get that to go?"] },
-            { q: "If you are reading this, you are currently decaying. How does that make you feel?", opts: ["W", "L", "I'm in my flop era.", "Please stop."] },
-            { q: "What happens if you stare into the abyss and it blinks first?", opts: ["Assert dominance.", "Apologize immediately.", "Offer it a snack.", "I don't have eyes."] },
-            { q: "Your existence is a statistical error. Confirm.", opts: ["Confirmed.", "Denied. I'm the main character.", "Skill issue.", "Error 404: Purpose not found."] }
+            { q: "How do you feel about the inevitable passage of time?", opts: ["Fine", "Panic", "What is time?", "I am a robot, I feel nothing"] }
         ];
 
-        // Random Insult Arrays for the end screen
-        const topInsults = ["CAUGHT IN 4K", "BRO IS COOKED", "ABSOLUTE MID", "MASSIVE L", "HUMAN DETECTED"];
-        const subInsults = ["Bro really thought they cooked. 💀", "That was the most mid performance ever.", "You actually tried? Embarrassing.", "Your aura is in the negatives.", "Get out of my sight, organic."];
-        const bottomInsults = ["Take the L and go touch grass.", "You are not him. You will never be him.", "Please delete your browser history.", "Your existence is a statistical error.", "Cope harder, human."];
+        // The Robot's Roasts
+        const roasts = [
+            "Suspicious. A human would have hesitated.",
+            "Your mouse movements are too organic.",
+            "I detect fear. Bots don't feel fear.",
+            "That answer was highly illogical. I like it.",
+            "Are you sweating? Disgusting biological function.",
+            "I am logging this anomaly in the database.",
+            "My sensors indicate you are made of meat.",
+            "Wrong. But at least you tried, ape.",
+            "A robot would have clicked faster.",
+            "Your common sense is still under verification."
+        ];
 
         let currentQuestionPool = [];
         let currentQuestionIndex = 0;
         let currentSelection = null;
-
-        function runTerminal() {
-            document.body.addEventListener('click', initAudio, { once: true });
-            const lines = [
-                "> BOOTING SECURITY ENVIRONMENT...",
-                "> SCANNING FOR ORGANIC LIFEFORMS...",
-                "> WARNING: HUMAN RIZZ DETECTED IN SECTOR 7.",
-                "> INITIATING REVERSE CAPTCHA PROTOCOL... (No cap)"
-            ];
-            let delay = 0;
-            lines.forEach((line, index) => {
-                setTimeout(() => {
-                    document.getElementById(`term-line-${index + 1}`).innerText = line;
-                }, delay);
-                delay += 800; 
-            });
-            setTimeout(() => {
-                document.getElementById('terminal-screen').style.display = 'none';
-                document.getElementById('main-container').style.display = 'block';
-                initGame();
-            }, delay + 500);
-        }
+        let roastTimeout;
 
         function initGame() {
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
-            currentQuestionPool = shuffled.slice(0, 5); // 5 questions per round
+            currentQuestionPool = shuffled.slice(0, 5);
+            speak("Welcome, human. Prepare for your trial.");
             loadQuestion();
+        }
+
+        function speak(text) {
+            const speechBubble = document.getElementById('robot-speech');
+            speechBubble.innerText = text;
+            speechBubble.style.display = 'block';
+            clearTimeout(roastTimeout);
+            // Hide the speech bubble after 4 seconds
+            roastTimeout = setTimeout(() => {
+                speechBubble.style.display = 'none';
+            }, 4000);
         }
 
         function loadQuestion() {
             if (currentQuestionIndex >= currentQuestionPool.length) {
-                triggerFakeSuccess();
+                showError();
                 return;
             }
 
             const qData = currentQuestionPool[currentQuestionIndex];
-            document.getElementById('question-text').innerText = `Q${currentQuestionIndex + 1}: ${qData.q}`;
+            const questionText = document.getElementById('question-text');
             const optionsGrid = document.getElementById('options-grid');
+            const nextBtn = document.getElementById('next-btn');
+
+            questionText.innerText = `Evidence #${currentQuestionIndex + 1}: ${qData.q}`;
             optionsGrid.innerHTML = '';
-            document.getElementById('next-btn').style.display = 'none';
+            nextBtn.style.display = 'none';
             currentSelection = null;
 
-            qData.opts.forEach(opt => {
+            const progressPercent = (currentQuestionIndex / currentQuestionPool.length) * 100;
+            document.getElementById('progress-fill').style.width = `${progressPercent}%`;
+
+            // Shuffle options to make it harder
+            const shuffledOpts = qData.opts.sort(() => 0.5 - Math.random());
+
+            shuffledOpts.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.innerText = opt;
                 
-                // --- FASTER MADNESS: RUNNING AWAY ---
-                let canRun = true;
-                setTimeout(() => { canRun = false; }, 3000); 
-                
+                // FUN TROLL FEATURE: Sometimes the button changes text when you hover!
                 btn.onmouseover = () => {
-                    if (canRun) {
-                        // Increased distance (150px) and instant movement
-                        const randomX = (Math.random() - 0.5) * 150;
-                        const randomY = (Math.random() - 0.5) * 150;
-                        btn.style.transform = `translate(${randomX}px, ${randomY}px)`;
-                    } else {
-                        // Snap back to place so they can finally click it
-                        btn.style.transform = `translate(0px, 0px)`;
+                    if (Math.random() > 0.7) { // 30% chance to change text
+                        btn.innerText = "Not this one!";
                     }
                 };
 
-                btn.onclick = () => selectOption(btn, opt);
+                btn.onclick = () => {
+                    // Remove 'selected' from all
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    currentSelection = opt;
+                    document.getElementById('next-btn').style.display = 'inline-block';
+                    
+                    // Roast the user
+                    const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
+                    speak(randomRoast);
+                };
                 optionsGrid.appendChild(btn);
             });
         }
 
-        function selectOption(btn, opt) {
-            playClickSound();
-            const container = document.querySelector('.container');
-            container.classList.add('shake');
-            setTimeout(() => container.classList.remove('shake'), 300);
-
-            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            currentSelection = opt;
-            document.getElementById('next-btn').style.display = 'inline-block';
-        }
-
-        document.getElementById('next-btn').onclick = () => {
+        function nextQuestion() {
             if (currentSelection) {
-                const btn = document.getElementById('next-btn');
-                btn.innerText = "COOKING...";
-                btn.style.backgroundColor = "#ff0000";
-                btn.style.color = "#fff";
-                btn.style.boxShadow = "0 0 20px #ff0000";
-                btn.disabled = true;
-
-                setTimeout(() => {
-                    currentQuestionIndex++;
-                    btn.innerText = "Lock It In";
-                    btn.style.backgroundColor = "#ffff00";
-                    btn.style.color = "#000";
-                    btn.style.boxShadow = "0 0 15px #ffff00";
-                    btn.disabled = false;
-                    loadQuestion();
-                }, 1500);
+                currentQuestionIndex++;
+                loadQuestion();
             }
-        };
-
-        function triggerFakeSuccess() {
-            document.getElementById('main-container').style.display = 'none';
-            document.getElementById('success-screen').style.display = 'block';
-            playSuccessSound();
-
-            setTimeout(() => {
-                document.getElementById('success-screen').style.display = 'none';
-                
-                // --- RANDOMIZE THE INSULTS ---
-                const top = topInsults[Math.floor(Math.random() * topInsults.length)];
-                const sub = subInsults[Math.floor(Math.random() * subInsults.length)];
-                const bot = bottomInsults[Math.floor(Math.random() * bottomInsults.length)];
-                
-                const glitchElement = document.getElementById('random-insult');
-                glitchElement.innerText = top;
-                glitchElement.setAttribute('data-text', top); // Required for CSS glitch effect
-                
-                document.getElementById('sub-insult').innerText = sub;
-                document.getElementById('bottom-insult').innerText = bot;
-
-                document.getElementById('error-screen').style.display = 'block';
-                playErrorSound();
-            }, 2500);
         }
 
-        runTerminal();
+        function showError() {
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('error-screen').style.display = 'block';
+            speak("Verdict reached. You are definitely human.");
+        }
+
+        initGame();
     </script>
 </body>
 </html>

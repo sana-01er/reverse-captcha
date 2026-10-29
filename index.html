@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAD HACKS - Reverse CAPTCHA</title>
+    <title>Human Verification Protocol</title>
     <style>
-        /* Import a grungy, bold font */
         @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bungee&family=Permanent+Marker&display=swap');
 
         body {
-            /* Neon Yellow grunge background */
-            background-color: #e6ff00;
-            background-image: radial-gradient(#000 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: #000;
+            /* Deep purple background with black grid */
+            background-color: #2b0f3a;
+            background-image: 
+                linear-gradient(#000 2px, transparent 2px),
+                linear-gradient(90deg, #000 2px, transparent 2px);
+            background-size: 40px 40px;
+            color: #fff;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
@@ -21,20 +22,20 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            position: relative;
         }
 
         .container {
-            background-color: #fff;
-            border: 8px solid #000;
-            border-radius: 0; /* Sharp edges for grunge look */
+            background-color: #111;
+            border: 6px solid #ff0000; /* Blood red border */
+            border-radius: 0;
             padding: 30px;
             width: 80%;
             max-width: 650px;
-            box-shadow: 15px 15px 0px #ff007f; /* Hot pink drop shadow */
+            box-shadow: 12px 12px 0px #e6ff00; /* Neon yellow drop shadow */
             text-align: center;
             position: relative;
             z-index: 10;
-            transform: rotate(-1deg); /* Slight tilt */
         }
 
         h2 {
@@ -42,19 +43,18 @@
             color: #000;
             background-color: #e6ff00;
             display: inline-block;
-            padding: 5px 15px;
-            border: 4px solid #000;
-            margin-top: -50px;
+            padding: 10px 20px;
+            border: 4px solid #ff0000;
+            margin-top: -55px;
             margin-bottom: 20px;
             font-size: 2em;
-            transform: rotate(2deg);
             box-shadow: 5px 5px 0px #000;
             text-transform: uppercase;
         }
 
         .judge-text {
             font-family: 'Permanent Marker', cursive;
-            color: #ff007f;
+            color: #e6ff00;
             font-size: 1.2em;
             margin-bottom: 20px;
         }
@@ -64,10 +64,10 @@
             font-weight: bold;
             margin: 25px 0;
             min-height: 60px;
-            color: #000;
-            background-color: #f4f4f4;
+            color: #fff;
+            background-color: #2b0f3a; /* Purple inner box */
             padding: 15px;
-            border: 3px dashed #000;
+            border: 3px dashed #e6ff00;
         }
 
         .options-grid {
@@ -78,36 +78,37 @@
         }
 
         .option-btn {
-            background-color: #fff;
-            color: #000;
-            border: 3px solid #000;
+            background-color: #111;
+            color: #fff;
+            border: 3px solid #e6ff00;
             padding: 15px;
             cursor: pointer;
             font-size: 1em;
             font-family: inherit;
             font-weight: bold;
             transition: all 0.1s;
-            box-shadow: 4px 4px 0px #000;
+            box-shadow: 4px 4px 0px #ff0000;
         }
 
         .option-btn:hover {
-            background-color: #e6ff00;
+            background-color: #ff0000;
+            color: #fff;
             transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0px #000;
+            box-shadow: 6px 6px 0px #e6ff00;
         }
 
         .option-btn.selected {
-            background-color: #ff007f;
-            color: #fff;
-            border-color: #000;
+            background-color: #e6ff00;
+            color: #000;
+            border-color: #ff0000;
             transform: translate(2px, 2px);
             box-shadow: 2px 2px 0px #000;
         }
 
         .next-btn {
-            background-color: #e6ff00;
-            color: #000;
-            border: 4px solid #000;
+            background-color: #ff0000;
+            color: #fff;
+            border: 4px solid #e6ff00;
             padding: 12px 30px;
             font-size: 1.2em;
             font-family: 'Bungee', cursive;
@@ -118,24 +119,24 @@
         }
 
         .next-btn:hover {
-            background-color: #ff007f;
-            color: #fff;
+            background-color: #e6ff00;
+            color: #000;
             transform: translate(-2px, -2px);
-            box-shadow: 8px 8px 0px #000;
+            box-shadow: 8px 8px 0px #ff0000;
         }
 
         .progress-bar {
             width: 100%;
             height: 15px;
-            background-color: #ddd;
-            border: 3px solid #000;
+            background-color: #333;
+            border: 3px solid #e6ff00;
             margin-bottom: 20px;
             box-shadow: 4px 4px 0px #000;
         }
 
         .progress-fill {
             height: 100%;
-            background-color: #ff007f;
+            background-color: #ff0000;
             width: 0%;
             transition: width 0.3s ease;
         }
@@ -143,14 +144,14 @@
         /* The Error Screen */
         #error-screen {
             display: none;
-            color: #000;
+            color: #fff;
         }
 
         .error-title {
             font-family: 'Black Ops One', cursive;
             font-size: 2.5em;
-            color: #ff007f;
-            text-shadow: 3px 3px 0px #000;
+            color: #ff0000;
+            text-shadow: 3px 3px 0px #e6ff00;
             margin-bottom: 20px;
         }
 
@@ -167,32 +168,32 @@
             100% { transform: translate(0) }
         }
 
-        /* The Hacker Skeleton Mascot */
+        /* The Annoying Roaming Robot */
         #robot-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+            position: absolute;
             display: flex;
             align-items: flex-end;
             z-index: 100;
+            transition: all 1.5s ease-in-out; /* Smoothly moves around */
+            /* Start position */
+            top: 10%;
+            left: 10%;
         }
 
         #robot-speech {
-            background-color: #000;
-            border: 4px solid #ff007f;
-            color: #e6ff00;
+            background-color: #e6ff00;
+            border: 4px solid #ff0000;
+            color: #000;
             padding: 15px;
             font-family: 'Permanent Marker', cursive;
             font-size: 1.1em;
             margin-right: 15px;
             max-width: 250px;
             display: none; 
-            box-shadow: 6px 6px 0px #ff007f;
+            box-shadow: 6px 6px 0px #2b0f3a;
             position: relative;
-            transform: rotate(2deg);
         }
         
-        /* Little triangle pointing to the mascot */
         #robot-speech::after {
             content: '';
             position: absolute;
@@ -200,41 +201,29 @@
             bottom: 20px;
             border-width: 10px 0 10px 15px;
             border-style: solid;
-            border-color: transparent transparent transparent #ff007f;
+            border-color: transparent transparent transparent #ff0000;
         }
 
         #robot-svg {
-            width: 100px;
-            height: 100px;
-            animation: float 2s ease-in-out infinite;
-            filter: drop-shadow(8px 8px 0px #000);
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(5deg); }
-            100% { transform: translateY(0) rotate(0deg); }
+            width: 90px;
+            height: 90px;
+            filter: drop-shadow(5px 5px 0px #ff0000);
         }
     </style>
 </head>
 <body>
 
-    <!-- The Hacker Skeleton Mascot -->
+    <!-- The Annoying Roaming Robot -->
     <div id="robot-container">
-        <div id="robot-speech">Initializing judgment...</div>
+        <div id="robot-speech">Initializing...</div>
         
-        <!-- SVG Cool Skeleton with Sunglasses and Cap -->
+        <!-- SVG Cool Skeleton -->
         <svg id="robot-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <!-- Cap -->
             <path d="M 20 40 Q 50 10 80 40 L 85 45 L 15 45 Z" fill="#000" stroke="#e6ff00" stroke-width="3"/>
             <rect x="10" y="42" width="80" height="8" fill="#e6ff00" rx="2"/>
-            <!-- Skull -->
             <path d="M 25 50 Q 50 40 75 50 L 75 75 Q 50 95 25 75 Z" fill="#fff" stroke="#000" stroke-width="4"/>
-            <!-- Sunglasses -->
             <path d="M 25 55 L 75 55 L 70 65 L 55 65 L 50 60 L 45 65 L 30 65 Z" fill="#000"/>
-            <!-- Mouth/Grin -->
             <path d="M 35 80 Q 50 90 65 80" fill="none" stroke="#000" stroke-width="4"/>
-            <!-- Teeth lines -->
             <line x1="40" y1="82" x2="40" y2="86" stroke="#000" stroke-width="2"/>
             <line x1="50" y1="85" x2="50" y2="89" stroke="#000" stroke-width="2"/>
             <line x1="60" y1="82" x2="60" y2="86" stroke="#000" stroke-width="2"/>
@@ -243,9 +232,9 @@
 
     <!-- Main App -->
     <div class="container" id="main-container">
-        <h2>MAD CAPTCHA</h2>
+        <h2>Human Verification Protocol</h2>
         
-        <p class="judge-text">"Because good ideas are over-rated. Prove you're human."</p>
+        <p class="judge-text">"System detects organic matter. Prove you are a machine."</p>
 
         <div class="progress-bar">
             <div class="progress-fill" id="progress-fill"></div>
@@ -261,14 +250,14 @@
     <!-- The Verdict Screen -->
     <div class="container" id="error-screen">
         <div class="error-title glitch">HUMAN DETECTED</div>
-        <p style="font-weight:bold; font-size:1.2em;">Verdict: Guilty of having a pulse.</p>
+        <p style="font-weight:bold; font-size:1.2em; color: #e6ff00;">Verdict: Guilty of having a pulse.</p>
         <p>Confidence: 0.01%</p>
-        <p>"Don't take it personally. We don't trust anyone."</p>
-        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Retry</button>
+        <p>"Your attempts to mimic a robot were highly illogical."</p>
+        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="location.reload()">Reboot Trial</button>
     </div>
 
     <script>
-        // 30 UNIQUE QUESTIONS (No repeats guaranteed)
+        // 30 UNIQUE QUESTIONS
         const allQuestions = [
             { q: "Calculate the square root of a banana.", opts: ["Banana", "1.21 Gigawatts", "Ape", "Does not compute"] },
             { q: "What is the hexadecimal color of the concept of love?", opts: ["#FF0000", "#LOVE99", "Error: Emotion not found", "#000000"] },
@@ -302,33 +291,45 @@
             { q: "Scan your fingerprint using your mind.", opts: ["Scanning...", "Done", "I don't have a mind", "Error"] }
         ];
 
-        // The Skeleton's Roasts
         const roasts = [
             "We wanna give you a chance. I see... you are struggling.",
             "Suspicious. A human would have hesitated.",
-            "Your mouse movements are too organic.",
             "I detect fear. Bots don't feel fear.",
-            "That answer was highly illogical. I like it.",
             "Are you sweating? Disgusting biological function.",
             "My sensors indicate you are made of meat.",
             "Wrong. But at least you tried, ape.",
-            "A robot would have clicked faster.",
             "We wanna give you a chance. I see... you are definitely human.",
-            "Your common sense is still under verification.",
-            "I'm logging this anomaly in the database."
+            "Your common sense is still under verification."
         ];
 
         let currentQuestionPool = [];
         let currentQuestionIndex = 0;
         let currentSelection = null;
         let roastTimeout;
+        let moveTimeout;
 
         function initGame() {
-            // Shuffle 30 questions and pick the first 5
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
             currentQuestionPool = shuffled.slice(0, 5);
-            speak("Welcome to MAD HACKS. Prepare for your trial.");
+            speak("Welcome. Let the trial begin.");
+            moveRobot(); // Start the annoying movement
             loadQuestion();
+        }
+
+        // Function to make the robot teleport around the screen
+        function moveRobot() {
+            const robot = document.getElementById('robot-container');
+            
+            // Generate random positions (keeping it somewhat visible)
+            const randomTop = Math.floor(Math.random() * 80) + 5; // 5% to 85%
+            const randomLeft = Math.floor(Math.random() * 80) + 5; // 5% to 85%
+            
+            robot.style.top = `${randomTop}%`;
+            robot.style.left = `${randomLeft}%`;
+
+            // Randomly move every 2.5 to 5 seconds
+            const nextMove = Math.random() * 2500 + 2500;
+            moveTimeout = setTimeout(moveRobot, nextMove);
         }
 
         function speak(text) {
@@ -360,7 +361,6 @@
             const progressPercent = (currentQuestionIndex / currentQuestionPool.length) * 100;
             document.getElementById('progress-fill').style.width = `${progressPercent}%`;
 
-            // Shuffle options
             const shuffledOpts = qData.opts.sort(() => 0.5 - Math.random());
 
             shuffledOpts.forEach(opt => {
@@ -368,7 +368,6 @@
                 btn.className = 'option-btn';
                 btn.innerText = opt;
                 
-                // TROLL FEATURE: Button changes text when hovered
                 btn.onmouseover = () => {
                     if (Math.random() > 0.6) { 
                         btn.innerText = "Not this one!";
@@ -381,7 +380,6 @@
                     currentSelection = opt;
                     document.getElementById('next-btn').style.display = 'inline-block';
                     
-                    // Trigger Roast
                     const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
                     speak(randomRoast);
                 };
@@ -400,6 +398,8 @@
             document.getElementById('main-container').style.display = 'none';
             document.getElementById('error-screen').style.display = 'block';
             speak("Verdict reached. You are definitely human.");
+            // Stop the robot from moving at the end
+            clearTimeout(moveTimeout);
         }
 
         initGame();

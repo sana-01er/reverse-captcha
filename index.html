@@ -194,26 +194,25 @@
             box-shadow: 0 0 20px #ff0055;
         }
 
-        /* Animation for when the button gets hijacked */
         .hijack-shake {
-            animation: shake 0.5s;
+            animation: shake 0.4s; /* Faster shake */
             background-color: #ff0055 !important;
             color: #fff !important;
             border-color: #fff !important;
         }
 
         @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
+            0% { transform: translate(2px, 2px) rotate(0deg); }
+            10% { transform: translate(-2px, -3px) rotate(-2deg); }
+            20% { transform: translate(-3px, 0px) rotate(2deg); }
+            30% { transform: translate(3px, 3px) rotate(0deg); }
+            40% { transform: translate(2px, -2px) rotate(2deg); }
+            50% { transform: translate(-2px, 3px) rotate(-2deg); }
+            60% { transform: translate(-3px, 2px) rotate(0deg); }
+            70% { transform: translate(3px, 2px) rotate(-2deg); }
+            80% { transform: translate(-2px, -2px) rotate(2deg); }
+            90% { transform: translate(2px, 3px) rotate(0deg); }
+            100% { transform: translate(2px, -3px) rotate(-2deg); }
         }
 
         .next-btn {
@@ -436,7 +435,6 @@
             "I am logging this error in the mainframe."
         ];
 
-        // THE NEW MOCKING LINES FOR HIJACKED QUESTIONS
         const hijackRoasts = [
             "You don't even know that?! How shameful.",
             "We had to change the answer for you. How disappointing.",
@@ -544,10 +542,10 @@
                 window.speechSynthesis.cancel(); 
                 
                 if (laugh) {
-                    const laughUtterance = new SpeechSynthesisUtterance("Ha. Ha. Ha. Ha. Ha.");
+                    const laughUtterance = new SpeechSynthesisUtterance("Ha Ha Ha Ha");
                     if (robotVoice) laughUtterance.voice = robotVoice;
-                    laughUtterance.pitch = 0.3; 
-                    laughUtterance.rate = 0.8; 
+                    laughUtterance.pitch = 1.5; // Higher pitched, mocking laugh
+                    laughUtterance.rate = 1.5;  // Much faster laugh
                     window.speechSynthesis.speak(laughUtterance);
                 }
 
@@ -556,8 +554,9 @@
                 utterance.rate = 1.1;
                 utterance.pitch = 0.5;
                 
+                // If laughing, text starts almost instantly (only 400ms delay)
                 if(laugh) {
-                    setTimeout(() => { window.speechSynthesis.speak(utterance); }, 1500);
+                    setTimeout(() => { window.speechSynthesis.speak(utterance); }, 400);
                 } else {
                     window.speechSynthesis.speak(utterance);
                 }
@@ -620,26 +619,23 @@
                             // Visual effect: The button they clicked flashes red and shakes
                             btn.classList.add('hijack-shake');
                             
-                            // Pick a random mocking line from our new array
                             const hijackInsult = hijackRoasts[Math.floor(Math.random() * hijackRoasts.length)];
                             speak(hijackInsult, true);
                             
-                            // Wait for the shake animation to finish, then select the new answer
+                            // Faster pause (only 500ms) before it selects the new answer
                             setTimeout(() => {
                                 btn.classList.remove('hijack-shake');
                                 targetBtn.classList.add('selected');
                                 currentSelection = targetBtn.innerText;
                                 document.getElementById('next-btn').style.display = 'inline-block';
-                            }, 800); // 800ms delay to let the mockery sink in
+                            }, 500); 
                             
                         } else {
-                            // Fallback just in case
                             btn.classList.add('selected');
                             currentSelection = opt;
                             document.getElementById('next-btn').style.display = 'inline-block';
                         }
                     } else {
-                        // Normal question
                         btn.classList.add('selected');
                         currentSelection = opt;
                         document.getElementById('next-btn').style.display = 'inline-block';

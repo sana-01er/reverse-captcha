@@ -333,7 +333,6 @@
             <p>Our sensors indicate you are made of meat and produce carbon dioxide. Disgusting.</p>
             <p>To enter this system, you must prove you are a machine. We will ask you 5 questions. If you fail, you will be permanently banned from the internet.</p>
             <p><strong>Do not disappoint us.</strong></p>
-            <!-- Clicking this will unlock the audio and start the test -->
             <button class="scan-btn" onclick="startTest()">Initiate Biometric Scan</button>
         </div>
     </div>
@@ -424,34 +423,26 @@
         let moveTimeout;
         let activeButtons = [];
         let score = 0;
-
-        // --- VOICE SYNTHESIS SETUP ---
         let robotVoice = null;
 
         function setupVoice() {
             if ('speechSynthesis' in window) {
                 const voices = window.speechSynthesis.getVoices();
-                // Try to find a deep, robotic, or UK voice. Otherwise use default.
                 robotVoice = voices.find(v => v.name.includes('UK English Male')) || 
                              voices.find(v => v.name.includes('Google UK English Male')) ||
                              voices.find(v => v.lang.includes('en-GB')) || 
                              voices[0];
             }
         }
-        // Load voices when the page opens
         window.speechSynthesis.onvoiceschanged = setupVoice;
 
         function startTest() {
-            // Ensure voices are loaded
             setupVoice();
-            
             document.getElementById('intro-popup').style.display = 'none';
-            
             const shuffled = allQuestions.sort(() => 0.5 - Math.random());
             currentQuestionPool = shuffled.slice(0, 5);
-            
             spawnTinyRobots();
-            speak("Let the trial begin."); // The first click unlocks the audio!
+            speak("Let the trial begin.");
             moveRobot(); 
             loadQuestion();
         }
@@ -469,7 +460,6 @@
                 tinyBot.className = 'tiny-robot';
                 tinyBot.innerHTML = svgCode;
                 document.body.appendChild(tinyBot);
-                
                 setInterval(() => {
                     const x = Math.random() * (window.innerWidth - 50);
                     const y = Math.random() * (window.innerHeight - 50);
@@ -484,10 +474,8 @@
             const maxY = window.innerHeight - 100;
             let newX = Math.floor(Math.random() * maxX);
             let newY = Math.floor(Math.random() * maxY);
-
             if (newY < 50) newY = 50;
             if (newY > window.innerHeight - 150) newY = window.innerHeight - 150;
-
             btn.style.left = `${newX}px`;
             btn.style.top = `${newY}px`;
         }
@@ -501,38 +489,46 @@
                 { top: '80%', right: '5%' }
             ];
             const randomCorner = corners[Math.floor(Math.random() * corners.length)];
-            
             robot.style.top = randomCorner.top;
             robot.style.left = randomCorner.left || 'auto';
             robot.style.right = randomCorner.right || 'auto';
-
             const nextMove = Math.random() * 3000 + 2000;
             moveTimeout = setTimeout(moveRobot, nextMove);
         }
 
-        // --- SPEAK FUNCTION ---
-        function speak(text) {
-            // 1. Show visual speech bubble
+        // --- THE EVIL LAUGH & VOICE ---
+        function speak(text, laugh = false) {
             const speechBubble = document.getElementById('robot-speech');
             speechBubble.innerText = text;
             speechBubble.style.display = 'block';
             clearTimeout(roastTimeout);
             roastTimeout = setTimeout(() => {
                 speechBubble.style.display = 'none';
-            }, 4000);
+            }, 5000);
 
-            // 2. Say it out loud
             if ('speechSynthesis' in window) {
-                // Cancel any currently playing audio so it doesn't overlap
                 window.speechSynthesis.cancel(); 
                 
+                // Play the laugh first if requested
+                if (laugh) {
+                    const laughUtterance = new SpeechSynthesisUtterance("Ha. Ha. Ha. Ha. Ha.");
+                    if (robotVoice) laughUtterance.voice = robotVoice;
+                    laughUtterance.pitch = 0.3; // Very deep
+                    laughUtterance.rate = 0.8; // Slow and menacing
+                    window.speechSynthesis.speak(laughUtterance);
+                }
+
                 const utterance = new SpeechSynthesisUtterance(text);
                 if (robotVoice) utterance.voice = robotVoice;
-                utterance.rate = 1.1; // Slightly faster
-                utterance.pitch = 0.5; // Deep, menacing robot pitch
-                utterance.volume = 1;
+                utterance.rate = 1.1;
+                utterance.pitch = 0.5;
                 
-                window.speechSynthesis.speak(utterance);
+                // If laughing, delay the text slightly so it speaks after the laugh
+                if(laugh) {
+                    setTimeout(() => { window.speechSynthesis.speak(utterance); }, 1500);
+                } else {
+                    window.speechSynthesis.speak(utterance);
+                }
             }
         }
 
@@ -577,17 +573,37 @@
                     }
                 });
 
+                // --- THE CLICK HIJACK LOGIC ---
                 btn.onclick = () => {
-                    btn.classList.add('selected');
-                    currentSelection = opt;
+                    // Stop other buttons from being clicked while processing
+                    activeButtons.forEach(b => b.style.pointerEvents = 'none');
+
+                    // 50% chance the system hijacks the click and selects a DIFFERENT button
+                    const hijack = Math.random() > 0.5; 
+                    
+                    let targetBtn = btn;
+                    
+                    if (hijack && activeButtons.length > 1) {
+                        // Find a different button to select
+                        const otherButtons = activeButtons.filter(b => b !== btn);
+                        targetBtn = otherButtons[Math.floor(Math.random() * otherButtons.length)];
+                        
+                        // Visual feedback of hijack
+                        btn.style.borderColor = "#fff"; // Flash the button they clicked
+                        speak("Incorrect input. Auto-correcting to the logical answer.", true);
+                    } else {
+                        speak("You caught it! " + roasts[Math.floor(Math.random() * roasts.length)], true);
+                    }
+
+                    // Select the target (either the one they clicked, or the hijacked one)
+                    targetBtn.classList.add('selected');
+                    currentSelection = targetBtn.innerText;
                     document.getElementById('next-btn').style.display = 'inline-block';
                     
                     if(Math.random() > 0.5) { score += 10; } else { score -= 5; }
                     document.getElementById('score-display').innerText = `HUMANITY SCORE: ${score}`;
 
                     playYeetSound();
-                    const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
-                    speak("You caught it! " + randomRoast);
                 };
                 
                 document.body.appendChild(btn); 
@@ -626,18 +642,16 @@
         function showError() {
             document.getElementById('main-container').style.display = 'none';
             document.getElementById('error-screen').style.display = 'block';
-            speak("Verdict reached. You are definitely human.");
+            speak("Verdict reached. You are definitely human.", true);
             clearTimeout(moveTimeout);
             activeButtons.forEach(b => b.style.display = 'none');
             
             document.getElementById('final-score').innerText = score;
             let rank = "";
-            
             if (score >= 30) { rank = "Suspiciously Human"; } 
             else if (score >= 10) { rank = "Certified Button Clicker"; } 
             else if (score >= 0) { rank = "Professional Overthinker"; } 
             else { rank = "CEO of Confusion"; }
-            
             document.getElementById('rank').innerText = rank;
         }
 
@@ -645,14 +659,12 @@
             const eyeLeft = document.getElementById('eye-left');
             const eyeRight = document.getElementById('eye-right');
             if(!eyeLeft || !eyeRight) return;
-
             const rect = document.getElementById('robot-svg').getBoundingClientRect();
             const dx = e.clientX - (rect.left + rect.width / 2);
             const dy = e.clientY - (rect.top + rect.height / 2);
             const angle = Math.atan2(dy, dx);
             const moveX = Math.cos(angle) * 3;
             const moveY = Math.sin(angle) * 3;
-
             eyeLeft.style.transform = `translate(${moveX}px, ${moveY}px)`;
             eyeRight.style.transform = `translate(${moveX}px, ${moveY}px)`;
         });
